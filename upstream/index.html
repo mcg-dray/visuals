@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upstream Optimization — MCG</title>
+<style>
+  :root{
+    --blue:#1F4E79; --blue2:#2E75B6; --green:#1f7a4d; --green2:#3fa45b;
+    --brown:#6e4a2a; --black:#23211f; --ink:#22303c; --muted:#5d6b76;
+    --panel:#ffffff; --bg:#eef2f7;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink);
+    display:flex;justify-content:center;padding:28px 16px;}
+  .wrap{width:100%;max-width:980px;}
+  h1{font-size:30px;color:var(--blue);margin:0 0 6px;}
+  .sub{font-size:17px;color:var(--muted);margin:0 0 14px;}
+  .rule{height:4px;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--blue2));margin-bottom:16px;}
+  .intro{background:#fff;border:1px solid #dbe3ec;border-radius:10px;padding:13px 16px;font-size:15px;
+    line-height:1.55;color:var(--ink);margin-bottom:16px;}
+  .intro b{color:var(--green);}
+
+  .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+  .seg{display:inline-flex;background:#dde6ef;border-radius:30px;padding:4px;}
+  .seg button{border:0;background:transparent;padding:10px 20px;border-radius:26px;font-size:15px;
+    font-weight:bold;color:var(--muted);cursor:pointer;transition:.2s;}
+  .seg button.on.today{background:var(--brown);color:#fff;}
+  .seg button.on.mcg{background:var(--green);color:#fff;}
+  .pill{margin-left:auto;font-size:14px;color:var(--muted);}
+
+  .stage{position:relative;border-radius:18px;height:400px;overflow:hidden;border:1px solid #d7c9b3;
+    box-shadow:0 6px 18px rgba(31,78,121,.08);
+    background:
+      repeating-linear-gradient(0deg, transparent 0 62px, rgba(120,90,55,.07) 62px 64px),
+      linear-gradient(180deg,#fbf6ec 0%, #f4ecdc 100%);}
+  .awning{position:absolute;top:0;left:0;right:0;height:32px;
+    background:repeating-linear-gradient(90deg,#c0392b 0 34px,#fff 34px 68px);}
+  .sign{position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:4;
+    font-size:15px;font-weight:bold;letter-spacing:3px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);}
+
+  .lane{position:absolute;left:0;right:0;top:214px;height:70px;background:#e9dcc4;
+    border-top:2px solid #d8c6a6;border-bottom:2px solid #d8c6a6;}
+  .lane:before{content:"";position:absolute;inset:0;
+    background:repeating-linear-gradient(90deg,rgba(140,110,70,.18) 0 18px,transparent 18px 40px);}
+  .laneLabel{position:absolute;left:0;right:0;top:288px;text-align:center;font-size:12.5px;
+    color:#9a7f55;font-weight:bold;letter-spacing:.4px;}
+
+  /* nodes share one alignment system */
+  .node{position:absolute;border-radius:14px;background:#fff;border:2px solid #d8c6a6;z-index:2;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;
+    box-shadow:0 4px 10px rgba(80,60,30,.10);padding:18px 12px 14px;}
+  .node .ic{height:30px;line-height:30px;font-size:26px;}
+  .node .t{font-size:16px;font-weight:bold;line-height:1.2;margin-top:6px;height:38px;display:flex;align-items:center;}
+  .node .d{font-size:12px;color:var(--muted);line-height:1.35;margin-top:2px;}
+
+  #ssp{left:26px;top:150px;width:226px;height:152px;}
+  #ssp .t{color:#3a4a57;}
+  /* MCG ribbon that sits ON the SSP */
+  .mcgTag{position:absolute;top:-14px;left:50%;transform:translateX(-50%) scale(.9);
+    background:var(--green);color:#fff;font-size:12.5px;font-weight:bold;letter-spacing:.3px;
+    padding:6px 14px;border-radius:20px;white-space:nowrap;opacity:0;transition:.3s;
+    box-shadow:0 4px 10px rgba(21,97,60,.3);}
+  #ssp.active{border-color:var(--green2);box-shadow:0 0 0 3px rgba(63,164,91,.18),0 4px 10px rgba(80,60,30,.10);}
+  #ssp.active .mcgTag{opacity:1;transform:translateX(-50%) scale(1);}
+
+  #dsp{right:26px;top:150px;width:200px;height:152px;border-color:#cdb78f;}
+  #dsp .t{color:#3a4a57;}
+
+  .label{position:absolute;top:44px;font-size:13px;font-weight:bold;letter-spacing:1px;z-index:3;}
+  #modeLabel{left:26px;}
+  .bin{position:absolute;left:200px;top:316px;font-size:12px;color:var(--brown);
+    font-weight:bold;opacity:0;transition:.3s;z-index:3;}
+  .bin.show{opacity:1;}
+
+  .item{position:absolute;width:30px;height:30px;border-radius:50%;top:236px;will-change:transform;z-index:1;}
+
+  .legend{display:flex;gap:18px;margin-top:14px;font-size:13px;color:var(--muted);align-items:center;flex-wrap:wrap;}
+  .dot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:5px;}
+  .narr{margin-top:14px;background:#fff;border:1px solid #dbe3ec;border-left:6px solid var(--blue2);
+    border-radius:10px;padding:14px 16px;font-size:16px;line-height:1.55;color:var(--ink);}
+  .narr b{color:var(--green);}
+  .out{margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .card{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border-radius:12px;padding:14px 16px;}
+  .card .k{font-size:13px;color:#cfe0f0;font-weight:bold;letter-spacing:.5px;}
+  .card .v{font-size:21px;font-weight:bold;margin-top:3px;}
+  .foot{margin-top:16px;font-size:13px;color:#9aa6b2;text-align:right;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Upstream optimization, explained</h1>
+  <p class="sub">Same shelf, same pipes — we just sort the supply at the source.</p>
+  <div class="rule"></div>
+
+  <div class="intro">
+    Think of your media supply like produce arriving at a supermarket. Crates show up at the store —
+    <b>fresh</b> and spoiled all mixed together — and your DSP can only shop from what made it onto the shelf.
+    MCG works right where the supply originates, <b>on your existing SSP</b>: we pull out the spoiled stock and
+    pass through the good supply, through the same pipes you already use. No new hop, no new integration.
+  </div>
+
+  <div class="controls">
+    <div class="seg">
+      <button id="bToday" class="today on" onclick="setMode('today')">The shelf — today</button>
+      <button id="bMcg" class="mcg" onclick="setMode('mcg')">With MCG — on your SSP</button>
+    </div>
+    <span class="pill" id="pill">Spoiled stock travels to the shelf</span>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="awning"></div>
+    <div class="sign">FRESH MARKET</div>
+    <div class="label" id="modeLabel" style="color:#6e4a2a">TODAY</div>
+
+    <div class="lane"></div>
+    <div class="laneLabel">your existing pipes &amp; deal IDs — unchanged</div>
+
+    <div class="node" id="ssp">
+      <div class="mcgTag">MCG works here — on your SSP</div>
+      <div class="ic">📦</div>
+      <div class="t">Your SSP<br>= the wholesaler</div>
+      <div class="d">where the supply originates</div>
+    </div>
+
+    <div class="node" id="dsp">
+      <div class="ic">🛒</div>
+      <div class="t" id="dspT">The shelf<br>= your DSP</div>
+      <div class="d" id="dspD">shops from what made the shelf</div>
+    </div>
+
+    <div class="bin" id="bin">↓ spoiled removed at the source</div>
+  </div>
+
+  <div class="narr" id="narr">Today, every crate leaves the SSP and travels to the shelf — fresh and spoiled, all mixed together. Your DSP can only shop from what showed up, so budget leaks into spoiled, low-value stock.</div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:#3fa45b"></span><b>Good supply</b> — passes through</span>
+    <span><span class="dot" style="background:#6e4a2a"></span>Spoiled (brown) — removed</span>
+    <span><span class="dot" style="background:#23211f"></span>Spoiled (rotten) — removed</span>
+    <span style="margin-left:auto">Toggle the modes to compare.</span>
+  </div>
+
+  <div class="out">
+    <div class="card"><div class="k">BUDGET</div><div class="v">Same</div></div>
+    <div class="card"><div class="k">SUPPLY ON THE SHELF</div><div class="v" id="o2">Mixed</div></div>
+    <div class="card"><div class="k">COST TO ACQUIRE</div><div class="v" id="o3">Higher</div></div>
+  </div>
+
+  <div class="foot">Media Consulting Group — structured supply activation · sits on your existing SSP, no new hop</div>
+</div>
+
+<script>
+var stage=document.getElementById('stage');
+var mode='today',items=[],lastSpawn=0,spawnEvery=540;
+var SPAWN_X=210, REMOVE_X=250;
+function rand(a,b){return a+Math.random()*(b-a);}
+function makeItem(){
+  var r=Math.random(), kind = r<0.5?'good':(r<0.78?'brown':'black');
+  var el=document.createElement('div');
+  el.className='item';
+  el.style.width=el.style.height=Math.round(rand(24,33))+'px';
+  if(kind==='good'){el.style.background='#3fa45b';el.style.boxShadow='inset 6px 5px 0 rgba(255,255,255,.35)';}
+  else if(kind==='brown'){el.style.background='#6e4a2a';el.style.boxShadow='inset -6px -4px 0 rgba(40,25,10,.55)';}
+  else{el.style.background='#23211f';el.style.boxShadow='inset -6px -4px 0 rgba(0,0,0,.5)';}
+  stage.appendChild(el);
+  return {el:el,x:SPAWN_X,y:236+rand(-6,6),good:(kind==='good'),diverted:false,vy:0};
+}
+function setMode(m){
+  mode=m;
+  document.getElementById('bToday').classList.toggle('on',m==='today');
+  document.getElementById('bMcg').classList.toggle('on',m==='mcg');
+  document.getElementById('ssp').classList.toggle('active',m==='mcg');
+  document.getElementById('bin').classList.toggle('show',m==='mcg');
+  var ml=document.getElementById('modeLabel');
+  ml.textContent=m==='mcg'?'WITH MCG':'TODAY';
+  ml.style.color=m==='mcg'?'#1f7a4d':'#6e4a2a';
+  if(m==='mcg'){
+    document.getElementById('dspT').innerHTML='The shelf<br>= your DSP';
+    document.getElementById('dspD').textContent='shops from clean, good supply';
+    document.getElementById('dsp').style.borderColor='#7cc49b';
+    document.getElementById('pill').textContent='Only good supply travels to the shelf';
+    document.getElementById('narr').innerHTML='With MCG, the sorting happens right at the source — <b>on your existing SSP</b>. Spoiled stock (the brown and the black) is pulled out before it ever leaves, so only <b>good supply</b> travels the same pipes to the same shelf. No extra hop. Same budget, less waste, lower CAC.';
+    document.getElementById('o2').textContent='Clean';
+    document.getElementById('o3').textContent='Lower';
+  }else{
+    document.getElementById('dspT').innerHTML='The shelf<br>= your DSP';
+    document.getElementById('dspD').textContent='shops from what made the shelf';
+    document.getElementById('dsp').style.borderColor='#cdb78f';
+    document.getElementById('pill').textContent='Spoiled stock travels to the shelf';
+    document.getElementById('narr').innerHTML='Today, every crate leaves the SSP and travels to the shelf — fresh and spoiled, all mixed together. Your DSP can only shop from what showed up, so budget leaks into spoiled, low-value stock.';
+    document.getElementById('o2').textContent='Mixed';
+    document.getElementById('o3').textContent='Higher';
+  }
+}
+function tick(ts){
+  var W=stage.clientWidth;
+  if(ts-lastSpawn>spawnEvery){lastSpawn=ts;items.push(makeItem());}
+  for(var i=items.length-1;i>=0;i--){
+    var it=items[i];
+    if(it.diverted){it.vy+=0.55;it.y+=it.vy;it.el.style.opacity=Math.max(0,1-(it.y-262)/170);
+      it.el.style.transform='translate('+it.x+'px,'+(it.y-236)+'px)';
+      if(it.y>430){it.el.remove();items.splice(i,1);}continue;}
+    it.x+=2.5;
+    if(mode==='mcg'&&!it.good&&it.x>=REMOVE_X){it.diverted=true;continue;}
+    it.el.style.transform='translate('+it.x+'px,'+(it.y-236)+'px)';
+    if(it.x>W-78){it.el.remove();items.splice(i,1);}
+  }
+  requestAnimationFrame(tick);
+}
+setMode('today');
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
