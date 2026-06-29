@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCG · AI Strategy — Next Six Months</title>
+<style>
+  :root{
+    --bg:#0b0e16; --panel:#131826; --panel2:#1a2030; --line:#2a3450;
+    --ink:#eaf0fb; --mut:#9aa6c4; --dim:#69748f;
+    --accent:#5b9dff; --accent2:#9b6bff;
+    --green:#34d399; --amber:#ffb33d; --red:#f87171;
+    --rail:#5378c4;            /* single org connector color */
+    --ai:#6ef0d2;              /* AI accent */
+    --ops:#5b9dff; --mkt:#34d399; --sales:#ffb33d; --research:#a78bff;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 700px at 50% -10%,#172037 0%,var(--bg) 55%);
+    color:var(--ink); line-height:1.55; padding:46px 22px 80px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1060px;margin:0 auto}
+  .bleed{width:min(1320px,97vw);position:relative;left:50%;transform:translateX(-50%)}
+  .eyebrow{letter-spacing:.22em;text-transform:uppercase;font-size:12px;color:var(--accent);font-weight:700}
+  h1{font-size:40px;line-height:1.08;margin:10px 0 10px;letter-spacing:-.02em}
+  h1 .grad{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--mut);font-size:16px;max-width:720px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .tag{font-size:12.5px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+  .tag b{color:var(--accent)}
+
+  section{margin-top:50px}
+  .sec-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .sec-num{width:30px;height:30px;flex:0 0 30px;border-radius:9px;display:grid;place-items:center;font-weight:700;font-size:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+  .sec-head h2{font-size:22px;letter-spacing:-.01em}
+  .sec-head p{color:var(--dim);font-size:13.5px;margin-left:auto}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+
+  /* ============ ORG CHART (nested tree) ============ */
+  .org{overflow-x:auto;text-align:center;padding:10px 4px 18px}
+  .org-inner{display:inline-block;min-width:100%}
+  .org ul{display:flex;justify-content:center;padding-top:26px;position:relative;list-style:none}
+  .org ul.root{padding-top:0}
+  .org li{--drop:26px;position:relative;padding:var(--drop) 11px 0;display:flex;flex-direction:column;align-items:center}
+  .org li::before,.org li::after{content:'';position:absolute;top:0;width:50%;height:var(--drop)}
+  .org li::before{right:50%;border-top:3px solid var(--rail)}
+  .org li::after{left:50%;border-top:3px solid var(--rail);border-left:3px solid var(--rail)}
+  .org li:only-child{padding-top:0}
+  .org li:only-child::before,.org li:only-child::after{display:none}
+  .org li:first-child::before,.org li:last-child::after{border-top:0}
+  .org li.staff{--drop:132px}          /* staff hang a full level below Daniel */
+  .org ul.root>li{padding-top:0}
+  .org ul.root>li::before,.org ul.root>li::after{display:none}
+  .org ul:not(.root)::before{content:'';position:absolute;top:0;left:50%;margin-left:-1.5px;width:0;height:26px;border-left:3px solid var(--rail)}
+
+  .unit{border-radius:12px;padding:11px 14px;min-width:122px;max-width:172px;text-align:center;
+        background:var(--panel2);border:1px solid var(--line);transition:transform .14s,box-shadow .14s}
+  .unit:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(0,0,0,.42)}
+  .unit .nm{font-weight:700;font-size:13.5px;line-height:1.22}
+  .unit .ic{font-size:13px;margin-right:3px}
+  .unit .ro{font-size:10.5px;color:var(--mut);margin-top:3px;letter-spacing:.02em}
+  /* CEO */
+  .unit.ceo{background:linear-gradient(160deg,#202a45,#161d2e);border-color:var(--accent);
+            box-shadow:0 0 0 4px rgba(91,157,255,.10);min-width:160px;padding:14px 18px}
+  .unit.ceo .nm{font-size:16.5px}
+  .unit.ceo .ro{color:var(--accent);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:11px}
+  /* Vacant / open role */
+  .unit.vacant{border-style:dashed;border-color:#46506e;
+               background:repeating-linear-gradient(135deg,#161c2b,#161c2b 9px,#141a28 9px,#141a28 18px)}
+  .unit.vacant .nm{color:#aab4cf}
+  .unit.vacant .ro{color:#717c98;font-style:italic;text-transform:uppercase;letter-spacing:.08em;font-size:10px}
+  /* AI agents */
+  .unit.ai{border-style:dashed;border-color:#3d6f73;background:linear-gradient(160deg,#13272b,#111b25);position:relative}
+  .unit.ai .nm{font-family:ui-monospace,Menlo,monospace;color:#e4faf5}
+  .unit.ai .ro{color:#8fcfc6}
+  .ai-badge{display:inline-block;margin-top:8px;font-size:9px;font-weight:800;letter-spacing:.1em;
+            color:#06221f;background:linear-gradient(90deg,var(--ai),#67c8ff);padding:2px 8px;border-radius:6px}
+  .org-cap{font-size:12px;color:var(--dim);text-align:center;margin-top:16px;max-width:760px;margin-left:auto;margin-right:auto}
+  .org-cap b{color:var(--mut)}
+
+  /* ============ generic blocks reused ============ */
+  .anat{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .ing{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .ing .h{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:7px}
+  .ing .h .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .ing .w{color:var(--mut);font-size:11.5px;margin-top:6px}
+  .ing .ex{color:var(--dim);font-size:11px;margin-top:9px;font-family:ui-monospace,Menlo,monospace}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card.k{border-color:rgba(91,157,255,.4)}
+  .card .lbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:700}
+  .card h3{font-size:18px;margin:5px 0 4px}
+  .card .one{color:var(--accent);font-size:13px;font-weight:600;margin-bottom:12px}
+  .card ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .card li{font-size:13px;color:var(--mut);padding-left:20px;position:relative}
+  .card li::before{content:"";position:absolute;left:0;top:7px;width:7px;height:7px;border-radius:2px;background:var(--accent)}
+  .verdict{margin-top:14px;font-size:12.5px;color:var(--ink);background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);border-radius:10px;padding:10px 13px}
+  .verdict b{color:var(--green)}
+  .flatnote{margin-top:16px;font-size:12.5px;color:var(--amber);background:rgba(255,179,61,.07);border:1px solid rgba(255,179,61,.25);border-radius:10px;padding:11px 14px}
+  .flatnote code{font-family:ui-monospace,Menlo,monospace;color:var(--ink)}
+
+  .tiers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .tier{border-radius:14px;padding:18px;border:1px solid var(--line);background:var(--panel2)}
+  .tier .cap{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+  .tier.t1{border-color:rgba(52,211,153,.35)} .tier.t1 .cap{color:var(--green)}
+  .tier.t2{border-color:rgba(255,179,61,.35)} .tier.t2 .cap{color:var(--amber)}
+  .tier.t3{border-color:rgba(248,113,113,.35)} .tier.t3 .cap{color:var(--red)}
+  .tier h3{font-size:15px;margin:6px 0 9px}
+  .tier ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .tier li{font-size:12.5px;color:var(--mut);padding-left:16px;position:relative}
+  .tier li::before{content:"›";position:absolute;left:2px;color:var(--dim)}
+  .dial{margin-top:16px;font-size:12.5px;color:var(--mut);text-align:center}
+  .dial b{color:var(--ink)}
+
+  .ops-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+  .owns{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+  .ch{font-size:11.5px;background:rgba(91,157,255,.1);border:1px solid rgba(91,157,255,.3);color:#bcd0ff;border-radius:7px;padding:4px 9px;font-family:ui-monospace,Menlo,monospace}
+  .loop{display:flex;flex-direction:column;margin-top:6px}
+  .step{display:flex;gap:11px;align-items:flex-start;padding:9px 0}
+  .step .n{flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font-size:11px;color:var(--accent);font-weight:700}
+  .step .t{font-size:12.5px;color:var(--mut)} .step .t b{color:var(--ink)}
+  .kpi{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .kpi div{font-size:12.5px;color:var(--mut);padding-left:22px;position:relative}
+  .kpi div::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+  .subhead{font-weight:700;font-size:13px;color:var(--ink);margin-bottom:6px}
+
+  pre.tree{background:#080b12;border:1px solid var(--line);border-radius:12px;padding:18px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--mut);overflow-x:auto;line-height:1.65}
+  pre.tree .d{color:var(--accent)} pre.tree .c{color:var(--dim)} pre.tree .star{color:var(--green)}
+
+  .road{display:grid;grid-template-columns:repeat(6,1fr);gap:0;position:relative}
+  .ph{padding:0 8px;position:relative}
+  .ph::before{content:"";position:absolute;top:13px;left:0;right:0;height:3px;background:var(--line);z-index:0}
+  .ph:first-child::before{left:50%} .ph:last-child::before{right:50%}
+  .ph .node2{width:26px;height:26px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--accent);position:relative;z-index:1;margin:0 auto}
+  .ph.done .node2{background:var(--accent);color:#fff}
+  .ph .mo{text-align:center;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:8px}
+  .ph .ttl{text-align:center;font-weight:700;font-size:12.5px;margin-top:3px}
+  .ph .bd{text-align:center;font-size:11px;color:var(--mut);margin-top:4px}
+
+  .foot{margin-top:42px;text-align:center;color:var(--dim);font-size:12px}
+  @media(max-width:880px){
+    .anat,.tiers,.two,.ops-grid{grid-template-columns:1fr}
+    .road{grid-template-columns:1fr 1fr;gap:18px}
+    .ph::before{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">MCG · 6-Month Operating Plan</div>
+  <h1>The <span class="grad">MCG AI Strategy</span></h1>
+  <p class="sub">One organization, human-led, with a fleet of AI "employees" embedded in it. Over the next six months each AI agent becomes a scoped Claude Code workspace that works between sessions, sits in the org chart under a named leader, and reports up. Modeled on the pattern Sherlock already proves.</p>
+  <div class="tags">
+    <span class="tag"><b>Topology:</b> One org — agents report to leaders</span>
+    <span class="tag"><b>Hosting:</b> Local-first</span>
+    <span class="tag"><b>Autonomy:</b> Tiered, earned</span>
+    <span class="tag"><b>Horizon:</b> Jun–Dec 2026</span>
+  </div>
+</div>
+
+<!-- 1. ORG CHART (full-bleed) -->
+<section class="bleed">
+  <div class="wrap" style="max-width:1320px;margin:0 auto">
+    <div class="sec-head"><div class="sec-num">1</div><h2>The org — people &amp; agents</h2><p>one organization · humans lead · agents execute</p></div>
+    <div class="panel">
+      <div class="org">
+        <div class="org-inner">
+          <ul class="root">
+            <li>
+              <!-- CEO -->
+              <div class="unit ceo"><div class="nm">Nadav Dray</div><div class="ro">CEO</div></div>
+              <ul>
+                <!-- CRO branch — Daniel (elevated deputy) -->
+                <li>
+                  <div class="unit"><div class="nm">Daniel</div><div class="ro">CRO</div></div>
+                  <ul>
+                    <li>
+                      <div class="unit"><div class="nm">Donald Williams</div><div class="ro">Chief Strategy Officer · &ldquo;Donnie&rdquo;</div></div>
+                      <ul>
+                        <li><div class="unit ai"><div class="nm"><span class="ic">💼</span>Assistant</div><div class="ro">for Donnie</div><span class="ai-badge">AI</span></div></li>
+                      </ul>
+                    </li>
+                    <li><div class="unit"><div class="nm">Diana</div><div class="ro">Advisor</div></div></li>
+                    <li><div class="unit ai"><div class="nm"><span class="ic">💼</span>Claudia</div><div class="ro">Personal Assistant</div><span class="ai-badge">AI</span></div></li>
+                    <li><div class="unit ai"><div class="nm"><span class="ic">🎯</span>Talia</div><div class="ro">Sales Agent</div><span class="ai-badge">AI</span></div></li>
+                  </ul>
+                </li>
+
+                <!-- COO Office (open seat) — Guy, Yuliia, Natalia work as a team -->
+                <li class="staff">
+                  <div class="unit vacant"><div class="nm">COO Office</div><div class="ro">Open seat</div></div>
+                  <ul>
+                    <li>
+                      <div class="unit"><div class="nm">Guy</div><div class="ro">Finance Manager</div></div>
+                      <ul><li><div class="unit ai"><div class="nm"><span class="ic">💼</span>Assistant</div><div class="ro">for Guy</div><span class="ai-badge">AI</span></div></li></ul>
+                    </li>
+                    <li>
+                      <div class="unit"><div class="nm">Yuliia</div><div class="ro">Operations</div></div>
+                      <ul><li><div class="unit ai"><div class="nm"><span class="ic">💼</span>Assistant</div><div class="ro">for Yuliia</div><span class="ai-badge">AI</span></div></li></ul>
+                    </li>
+                    <li>
+                      <div class="unit"><div class="nm">Natalia</div><div class="ro">Operations</div></div>
+                      <ul><li><div class="unit ai"><div class="nm"><span class="ic">💼</span>Assistant</div><div class="ro">for Natalia</div><span class="ai-badge">AI</span></div></li></ul>
+                    </li>
+                  </ul>
+                </li>
+
+                <!-- Agentic — Sherlock (Head of Agentic) leads the functional agents -->
+                <li class="staff">
+                  <div class="unit ai"><div class="nm"><span class="ic">🕵️</span>Sherlock</div><div class="ro">Head of Agentic</div><span class="ai-badge">AI</span></div>
+                  <ul>
+                    <li><div class="unit ai"><div class="nm"><span class="ic">⚙️</span>Atlas</div><div class="ro">Ops Agent</div><span class="ai-badge">AI</span></div></li>
+                    <li><div class="unit ai"><div class="nm"><span class="ic">📣</span>Jessica</div><div class="ro">Marketing Agent</div><span class="ai-badge">AI</span></div></li>
+                    <li><div class="unit ai"><div class="nm"><span class="ic">🔬</span>Watson</div><div class="ro">Research / CI Agent</div><span class="ai-badge">AI</span></div></li>
+                  </ul>
+                </li>
+
+                <!-- Gali — Chief AI Officer, standalone -->
+                <li class="staff"><div class="unit"><div class="nm">Gali</div><div class="ro">Chief AI Officer</div></div></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="org-cap"><b>AI</b> tag marks autonomous agents; everyone else is a person. The <b>COO seat is open</b> — Guy, Yuliia &amp; Natalia work as one team and report to the CEO meanwhile. Sherlock now leads the Agentic group (Atlas, Jessica, Watson). Team-member assistants are unnamed for now; photos can be added later.</div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <!-- 2. ANATOMY -->
+  <section>
+    <div class="sec-head"><div class="sec-num">2</div><h2>Anatomy of one agent</h2><p>5 ingredients · all proven by Sherlock</p></div>
+    <div class="panel">
+      <div class="anat">
+        <div class="ing"><div class="h"><span class="dot"></span>Identity</div><div class="w">Role, expertise, goals, KPIs, voice &amp; boundaries.</div><div class="ex">IDENTITY.md<br>SOUL.md</div></div>
+        <div class="ing"><div class="h"><span class="dot"></span>Memory</div><div class="w">Long-term truth + a dated working/audit log.</div><div class="ex">MEMORY.md<br>memory/</div></div>
+        <div class="ing"><div class="h"><span class="dot"></span>Scoped tools</div><div class="w">Least-privilege creds, MCP &amp; skills — only its lane.</div><div class="ex">.claude/<br>settings.json</div></div>
+        <div class="ing"><div class="h"><span class="dot"></span>Comms identity</div><div class="w">Optional alias so its actions are attributable.</div><div class="ex">ops@wermcg.com<br>(later)</div></div>
+        <div class="ing"><div class="h"><span class="dot"></span>A loop</div><div class="w">A cron that wakes it to do the job unprompted.</div><div class="ex">launchd<br>cron</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. ACCOUNT VS FOLDER -->
+  <section>
+    <div class="sec-head"><div class="sec-num">3</div><h2>Account vs. folder</h2><p>what you do &amp; don't duplicate</p></div>
+    <div class="two">
+      <div class="card">
+        <div class="lbl">The bill</div><h3>💳 Account / Subscription</h3>
+        <div class="one">Who pays &amp; your usage budget</div>
+        <ul>
+          <li>Controls auth, billing, rate limits</li>
+          <li>Shared across <i>all</i> agents</li>
+          <li>One account runs the whole fleet</li>
+          <li>Does <b>not</b> make agents different</li>
+        </ul>
+        <div class="verdict">Need one per agent? <b>No.</b> Spin up a new account only for hard isolation (e.g. air-gapped finance) — not yet.</div>
+      </div>
+      <div class="card k">
+        <div class="lbl">The employee</div><h3>📁 Folder / Workspace</h3>
+        <div class="one">Who the agent actually is</div>
+        <ul>
+          <li>Holds identity, memory, tools, permissions</li>
+          <li>Fully isolated per agent</li>
+          <li>This is what makes Atlas ≠ Jessica</li>
+          <li>The personality lives here, not the account</li>
+        </ul>
+        <div class="verdict">Need one per agent? <b>Yes — the folder IS the agent.</b> New hire = new folder.</div>
+      </div>
+    </div>
+    <div class="flatnote" style="color:var(--mut);background:var(--panel);border-color:var(--line)">
+      💡 <b style="color:var(--ink)">Scaling lever = where background work bills, not more subscriptions.</b>
+      Start with one account + a handful of folders. When the fleet gets busy, move the cron agents to <b style="color:var(--ink)">API-key billing</b> so they never throttle interactive work — optionally one key per agent for per-agent cost tracking &amp; independent revoke. Built API-key-ready: a one-line env change, no restructure.
+    </div>
+  </section>
+
+  <!-- 4. AUTONOMY -->
+  <section>
+    <div class="sec-head"><div class="sec-num">4</div><h2>Autonomy — tiered, earned</h2><p>same model Sherlock runs on</p></div>
+    <div class="panel">
+      <div class="tiers">
+        <div class="tier t1"><div class="cap">Tier 1 · Free</div><h3>Act without asking</h3>
+          <ul><li>Read &amp; search</li><li>Research</li><li>Draft &amp; plan</li><li>Log to memory</li></ul></div>
+        <div class="tier t2"><div class="cap">Tier 2 · Ask first</div><h3>Approve until proven</h3>
+          <ul><li>Send / reply</li><li>Post to channels</li><li>Write to systems</li><li>Schedule / modify</li></ul></div>
+        <div class="tier t3"><div class="cap">Tier 3 · Never</div><h3>Hard boundaries</h3>
+          <ul><li>Financial transactions</li><li>Impersonation</li><li>Deleting w/o instruction</li><li>New access controls</li></ul></div>
+      </div>
+      <div class="dial">🎚️ <b>The hand-off dial:</b> as an agent proves a recurring task safe, promote it Tier 2 → standing permission — exactly how SpaceMob, XeWorks &amp; MCG-dashboard became autonomous. <b>This is the biggest productivity unlock, not more agents.</b></div>
+    </div>
+  </section>
+
+  <!-- 5. SECURITY -->
+  <section>
+    <div class="sec-head"><div class="sec-num">5</div><h2>Local-first &amp; secured</h2><p>separation IS the security model</p></div>
+    <div class="two">
+      <div class="card">
+        <h3 style="font-size:16px">🔒 How privacy is enforced</h3>
+        <ul style="margin-top:12px">
+          <li><b style="color:var(--ink)">Least privilege</b> — Atlas sees finance + sheets; Talia never touches QuickBooks; Jessica never reads candidate files</li>
+          <li><b style="color:var(--ink)">Own guardrail hook</b> per agent, with its own allowlist — a confused agent can only act in its lane</li>
+          <li><b style="color:var(--ink)">Local creds</b> in per-agent config dirs; nothing leaves your machine</li>
+          <li><b style="color:var(--ink)">Audit trail</b> — every action lands in that agent's dated memory log</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="subhead">📂 Folder layout — clone-to-scale</div>
+        <pre class="tree">
+<span class="d">~/Desktop/agents/</span>
+├── <span class="d">_shared/</span>
+│   ├── <span class="d">AGENT_TEMPLATE/</span>   <span class="c"># clone per hire</span>
+│   ├── ORG.md           <span class="c"># roster · rules</span>
+│   └── <span class="d">guardrail/</span>       <span class="c"># hook + allowlists</span>
+├── <span class="d">sherlock/</span>  <span class="c"># head of agentic</span>
+├── <span class="d">atlas/</span> <span class="star">★ ops · build first</span>
+│   ├── CLAUDE · IDENTITY · SOUL .md
+│   ├── MEMORY.md + <span class="d">memory/</span>
+│   ├── <span class="d">.claude/</span>settings.json <span class="c"># scoped</span>
+│   ├── <span class="d">skills/</span>          <span class="c"># only its own</span>
+│   └── <span class="d">reports/</span>         <span class="c"># briefs up</span>
+├── <span class="d">jessica/</span>   <span class="c"># marketing</span>
+├── <span class="d">talia/</span>     <span class="c"># sales → Daniel</span>
+└── <span class="d">watson/</span>    <span class="c"># research</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. OPS -->
+  <section>
+    <div class="sec-head"><div class="sec-num">6</div><h2>First hire: Atlas (Ops)</h2><p>nearly free — runs skills you already own</p></div>
+    <div class="panel">
+      <div class="ops-grid">
+        <div>
+          <div class="subhead">Owns these existing skills</div>
+          <div class="owns">
+            <span class="ch">mcg-dashboard</span><span class="ch">xeworks-api</span>
+            <span class="ch">iscream-api</span><span class="ch">spacemob-discrepancy</span>
+            <span class="ch">master-accounting-prep</span><span class="ch">commissions</span>
+            <span class="ch">index-exchange-report</span><span class="ch">magnite-report</span>
+          </div>
+          <div class="subhead" style="margin-top:20px">Daily job loop</div>
+          <div class="loop">
+            <div class="step"><div class="n">1</div><div class="t"><b>Run</b> the day's scheduled reports</div></div>
+            <div class="step"><div class="n">2</div><div class="t"><b>Detect</b> failures &amp; anomalies — stale tab, revenue drop &gt;X%, errored cron</div></div>
+            <div class="step"><div class="n">3</div><div class="t"><b>Write</b> one Ops Brief to <code>reports/</code></div></div>
+            <div class="step"><div class="n">4</div><div class="t"><b>Ping</b> you on Dispatch / Telegram</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="background:var(--panel2)">
+            <div class="subhead">🎯 KPIs (in IDENTITY.md)</div>
+            <div class="kpi">
+              <div>All daily reports green by 9am NY</div>
+              <div>Anomalies surfaced before you ask</div>
+              <div>Zero silent failures</div>
+            </div>
+            <div class="verdict" style="margin-top:18px">Tier 1 on read-only reports + already-approved autonomous skills. Tier 2 ask before anything new that writes or sends. <b>Atlas becomes the template</b> — Jessica, Talia &amp; Watson are clones with a different identity &amp; scope.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. ROADMAP -->
+  <section>
+    <div class="sec-head"><div class="sec-num">7</div><h2>6-month roadmap</h2><p>prove one · clone the rest</p></div>
+    <div class="panel">
+      <div class="road">
+        <div class="ph done"><div class="node2">✓</div><div class="mo">Jun</div><div class="ttl">Scaffold</div><div class="bd">Template + Atlas folder, identity, scoped settings, roll-up cron</div></div>
+        <div class="ph"><div class="node2">2</div><div class="mo">Jul</div><div class="ttl">Prove Ops</div><div class="bd">Run live read-only; promote tasks to standing permission</div></div>
+        <div class="ph"><div class="node2">3</div><div class="mo">Aug</div><div class="ttl">Watson</div><div class="bd">Research / CI agent — low-risk, real autonomy early</div></div>
+        <div class="ph"><div class="node2">4</div><div class="mo">Sep–Oct</div><div class="ttl">Jessica + Talia</div><div class="bd">Marketing (→CEO) &amp; Sales (→CRO) with tight outbound rails</div></div>
+        <div class="ph"><div class="node2">5</div><div class="mo">Nov</div><div class="ttl">Bill split</div><div class="bd">Move fleet to API-key billing; per-agent cost tracking</div></div>
+        <div class="ph"><div class="node2">6</div><div class="mo">Dec</div><div class="ttl">Scale</div><div class="bd">Drop in a Chief-of-Staff hub if &gt;5 agents; review &amp; expand</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">MCG AI Strategy · Jun–Dec 2026 · built with Claude Code · nothing live until each step is approved</div>
+
+</div>
+</body>
+</html>
