@@ -213,7 +213,7 @@
                 <li class="staff">
                   <div class="unit ai"><div class="nm"><span class="ic">🕵️</span>Sherlock</div><div class="ro">Head of Agentic</div><span class="ai-badge">AI</span></div>
                   <ul>
-                    <li><div class="unit ai"><div class="nm"><span class="ic">⚙️</span>Atlas</div><div class="ro">Ops Agent</div><span class="ai-badge">AI</span></div></li>
+                    <li><div class="unit ai"><div class="nm"><span class="ic">⚙️</span>Felix</div><div class="ro">AdOps Agent</div><span class="ai-badge">AI</span></div></li>
                     <li><div class="unit ai"><div class="nm"><span class="ic">📣</span>Jessica</div><div class="ro">Marketing Agent</div><span class="ai-badge">AI</span></div></li>
                     <li><div class="unit ai"><div class="nm"><span class="ic">🔬</span>Watson</div><div class="ro">Research / CI Agent</div><span class="ai-badge">AI</span></div></li>
                   </ul>
@@ -226,7 +226,7 @@
           </ul>
         </div>
       </div>
-      <div class="org-cap"><b>AI</b> tag marks autonomous agents; everyone else is a person. The <b>COO seat is open</b> — Guy, Yuliia &amp; Natalia work as one team and report to the CEO meanwhile. Sherlock now leads the Agentic group (Atlas, Jessica, Watson). Team-member assistants are unnamed for now; photos can be added later.</div>
+      <div class="org-cap"><b>AI</b> tag marks autonomous agents; everyone else is a person. The <b>COO seat is open</b> — Guy, Yuliia &amp; Natalia work as one team and report to the CEO meanwhile. Sherlock now leads the Agentic group (Felix, Jessica, Watson). Team-member assistants are unnamed for now; photos can be added later.</div>
     </div>
   </div>
 </section>
@@ -268,7 +268,7 @@
         <ul>
           <li>Holds identity, memory, tools, permissions</li>
           <li>Fully isolated per agent</li>
-          <li>This is what makes Atlas ≠ Jessica</li>
+          <li>This is what makes Felix ≠ Jessica</li>
           <li>The personality lives here, not the account</li>
         </ul>
         <div class="verdict">Need one per agent? <b>Yes — the folder IS the agent.</b> New hire = new folder.</div>
@@ -303,7 +303,7 @@
       <div class="card">
         <h3 style="font-size:16px">🔒 How privacy is enforced</h3>
         <ul style="margin-top:12px">
-          <li><b style="color:var(--ink)">Least privilege</b> — Atlas sees finance + sheets; Talia never touches QuickBooks; Jessica never reads candidate files</li>
+          <li><b style="color:var(--ink)">Least privilege</b> — Felix sees finance + sheets; Talia never touches QuickBooks; Jessica never reads candidate files</li>
           <li><b style="color:var(--ink)">Own guardrail hook</b> per agent, with its own allowlist — a confused agent can only act in its lane</li>
           <li><b style="color:var(--ink)">Local creds</b> in per-agent config dirs; nothing leaves your machine</li>
           <li><b style="color:var(--ink)">Audit trail</b> — every action lands in that agent's dated memory log</li>
@@ -318,7 +318,7 @@
 │   ├── ORG.md           <span class="c"># roster · rules</span>
 │   └── <span class="d">guardrail/</span>       <span class="c"># hook + allowlists</span>
 ├── <span class="d">sherlock/</span>  <span class="c"># head of agentic</span>
-├── <span class="d">atlas/</span> <span class="star">★ ops · build first</span>
+├── <span class="d">felix/</span> <span class="star">★ adops · build first</span>
 │   ├── CLAUDE · IDENTITY · SOUL .md
 │   ├── MEMORY.md + <span class="d">memory/</span>
 │   ├── <span class="d">.claude/</span>settings.json <span class="c"># scoped</span>
@@ -333,7 +333,7 @@
 
   <!-- 6. OPS -->
   <section>
-    <div class="sec-head"><div class="sec-num">6</div><h2>First hire: Atlas (Ops)</h2><p>nearly free — runs skills you already own</p></div>
+    <div class="sec-head"><div class="sec-num">6</div><h2>First hire: Felix (AdOps)</h2><p>domain expert — owns the programmatic ops you already run</p></div>
     <div class="panel">
       <div class="ops-grid">
         <div>
@@ -360,7 +360,7 @@
               <div>Anomalies surfaced before you ask</div>
               <div>Zero silent failures</div>
             </div>
-            <div class="verdict" style="margin-top:18px">Tier 1 on read-only reports + already-approved autonomous skills. Tier 2 ask before anything new that writes or sends. <b>Atlas becomes the template</b> — Jessica, Talia &amp; Watson are clones with a different identity &amp; scope.</div>
+            <div class="verdict" style="margin-top:18px">Tier 1 on read-only reports + already-approved autonomous skills. Tier 2 ask before anything new that writes or sends. <b>Felix becomes the template</b> — Jessica, Talia &amp; Watson are clones with a different identity &amp; scope.</div>
           </div>
         </div>
       </div>
@@ -372,7 +372,7 @@
     <div class="sec-head"><div class="sec-num">7</div><h2>6-month roadmap</h2><p>prove one · clone the rest</p></div>
     <div class="panel">
       <div class="road">
-        <div class="ph done"><div class="node2">✓</div><div class="mo">Jun</div><div class="ttl">Scaffold</div><div class="bd">Template + Atlas folder, identity, scoped settings, roll-up cron</div></div>
+        <div class="ph done"><div class="node2">✓</div><div class="mo">Jun</div><div class="ttl">Scaffold</div><div class="bd">Template + Felix folder, identity, scoped settings, roll-up cron</div></div>
         <div class="ph"><div class="node2">2</div><div class="mo">Jul</div><div class="ttl">Prove Ops</div><div class="bd">Run live read-only; promote tasks to standing permission</div></div>
         <div class="ph"><div class="node2">3</div><div class="mo">Aug</div><div class="ttl">Watson</div><div class="bd">Research / CI agent — low-risk, real autonomy early</div></div>
         <div class="ph"><div class="node2">4</div><div class="mo">Sep–Oct</div><div class="ttl">Jessica + Talia</div><div class="bd">Marketing (→CEO) &amp; Sales (→CRO) with tight outbound rails</div></div>
