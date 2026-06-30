@@ -1,0 +1,1379 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Sherlock for Buyers — MCG</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#04070D;
+  --surface:#0D0F17;
+  --surface-2:#10131C;
+  --surface-3:#161A26;
+  --text:#FFFFFF;
+  --text-2:#D5DBE6;
+  --text-3:#7D8294;
+  --accent:#0099FF;
+  --accent-2:#53BDBF;
+  --accent-soft:rgba(0,153,255,0.12);
+  --accent-glow:rgba(0,153,255,0.35);
+  --success:#22C55E;
+  --warn:#F87171;
+  --border:rgba(255,255,255,0.08);
+  --border-strong:rgba(255,255,255,0.14);
+  --shadow-1:0 1px 2px rgba(0,0,0,0.4);
+  --shadow-2:0 8px 24px rgba(0,0,0,0.4);
+  --shadow-3:0 24px 60px rgba(0,0,0,0.5);
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --serif:'Instrument Serif',Georgia,serif;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow-x:hidden;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+body{
+  min-height:100%;
+  width:100%;
+  max-width:100%;
+  background:
+    radial-gradient(1200px 600px at 80% -10%,rgba(0,153,255,0.08),transparent 60%),
+    radial-gradient(900px 500px at -10% 110%,rgba(83,189,191,0.05),transparent 60%),
+    var(--bg);
+}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit;padding:0}
+input{font-family:inherit;color:inherit}
+.tnum{font-feature-settings:"tnum" 1, "ss01" 1}
+
+/* ============ TOP BAR ============ */
+.topbar{
+  min-height:60px;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  gap:10px;
+  padding:10px 20px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(13,15,23,0.95),rgba(13,15,23,0.85));
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:50;
+  width:100%;
+  max-width:100%;
+}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 auto}
+.brand-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,#0099FF 0%,#33B0FF 60%,#66C5FF 100%);
+  box-shadow:0 0 0 1px rgba(0,153,255,0.3),0 4px 14px rgba(0,153,255,0.4),inset 0 1px 0 rgba(255,255,255,0.25);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:14px;color:#fff;letter-spacing:-0.02em;
+  flex-shrink:0;
+}
+.brand-name{font-weight:600;font-size:15px;letter-spacing:-0.01em;white-space:nowrap}
+.brand-name .muted{color:var(--text-3);font-weight:400;margin-left:4px}
+.divider{width:1px;height:20px;background:var(--border-strong);margin:0 16px}
+.crumbs{display:flex;align-items:center;gap:8px;color:var(--text-3);font-size:13px;min-width:0;overflow:hidden}
+.crumbs .crumb{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;min-width:0}
+.crumbs .crumb.active{color:var(--text-2)}
+.crumbs .sep{color:var(--text-3);opacity:0.5}
+
+.top-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 12px;border-radius:8px;
+  background:transparent;border:1px solid var(--border);
+  color:var(--text-2);font-size:13px;font-weight:500;
+  transition:all 160ms ease;
+}
+.btn-ghost:hover{background:rgba(255,255,255,0.04);border-color:var(--border-strong);color:var(--text)}
+.btn-ghost svg{width:13px;height:13px}
+.persona{
+  display:flex;align-items:center;gap:10px;
+  padding:5px 12px 5px 5px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+}
+.avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#1F2937,#374151);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:600;font-size:11px;color:var(--text-2);
+  letter-spacing:0.02em;
+  border:1px solid var(--border-strong);
+}
+.persona-text{display:flex;flex-direction:column;line-height:1.15}
+.persona-name{font-size:12.5px;font-weight:600}
+.persona-meta{font-size:10.5px;color:var(--text-3)}
+
+@media (max-width:768px){
+  .crumbs,.divider{display:none}
+  .topbar{padding:10px 14px}
+}
+@media (max-width:640px){
+  .persona{padding:4px;gap:0}
+  .persona-text{display:none}
+  .btn-ghost .label-text{display:none}
+}
+
+/* ============ LAYOUT ============ */
+.shell{
+  display:grid;
+  grid-template-columns:1fr 460px;
+  gap:20px;
+  padding:20px;
+  max-width:1680px;
+  width:100%;
+  margin:0 auto;
+  align-items:start;
+}
+@media (max-width:1099px){
+  .shell{grid-template-columns:1fr;gap:16px;padding:16px}
+}
+@media (max-width:599px){
+  .shell{padding:12px;gap:12px}
+}
+
+/* ============ LEFT PANEL ============ */
+.panel{
+  background:linear-gradient(180deg,var(--surface) 0%,var(--surface-2) 100%);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px;
+  box-shadow:var(--shadow-2);
+  min-width:0;
+  max-width:100%;
+}
+@media (max-width:599px){
+  .panel{padding:18px}
+}
+.campaign-head{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.campaign-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.campaign-title{font-size:24px;font-weight:600;letter-spacing:-0.02em;line-height:1.2}
+.campaign-sub{color:var(--text-3);font-size:13px}
+.pill-live{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 10px;border-radius:999px;
+  background:rgba(34,197,94,0.1);
+  border:1px solid rgba(34,197,94,0.25);
+  color:var(--success);font-size:11px;font-weight:600;
+  letter-spacing:0.04em;text-transform:uppercase;
+}
+.live-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--success);
+  box-shadow:0 0 0 0 rgba(34,197,94,0.6);
+  animation:pulse-green 2s ease-out infinite;
+}
+@keyframes pulse-green{
+  0%{box-shadow:0 0 0 0 rgba(34,197,94,0.6)}
+  70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}
+  100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}
+}
+
+/* DEAL CARDS */
+.deals{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:28px}
+.deal{
+  position:relative;
+  padding:14px 16px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  transition:all 320ms ease;
+}
+.deal.active{
+  border-color:rgba(0,153,255,0.45);
+  background:linear-gradient(180deg,rgba(0,153,255,0.06),var(--surface-2));
+  box-shadow:0 0 0 1px rgba(0,153,255,0.15),0 8px 24px rgba(0,153,255,0.08);
+}
+.deal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.deal-ssp{font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3)}
+.deal.active .deal-ssp{color:var(--accent)}
+.deal-type{
+  font-size:9.5px;font-weight:600;letter-spacing:0.08em;
+  padding:2px 7px;border-radius:4px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  color:var(--text-2);
+}
+.deal-id{
+  font-family:var(--mono);font-size:12px;font-weight:500;
+  color:var(--text-2);
+  word-break:break-all;line-height:1.4;margin-bottom:8px;
+}
+.deal-floor{font-size:11px;color:var(--text-3)}
+.deal-floor strong{color:var(--text-2);font-weight:500}
+
+/* SECTION LABEL */
+.section-label{
+  display:flex;align-items:center;gap:10px;
+  font-size:10.5px;font-weight:600;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--text-3);
+  margin-bottom:12px;
+}
+.section-label::after{content:"";flex:1;height:1px;background:var(--border)}
+
+/* KPI GRID */
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;
+  margin-bottom:28px;
+}
+@media (max-width:599px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+.kpi{
+  position:relative;
+  padding:14px 14px 14px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  transition:border-color 280ms ease, box-shadow 280ms ease;
+  overflow:hidden;
+  min-width:0;
+}
+.kpi.flash{
+  border-color:rgba(0,153,255,0.45);
+  box-shadow:0 0 0 1px rgba(0,153,255,0.2),0 4px 16px rgba(0,153,255,0.12);
+}
+.kpi-label{
+  font-size:10px;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text-3);
+  margin-bottom:6px;
+}
+.kpi-value{
+  font-family:var(--mono);
+  font-size:clamp(16px,2.2vw,22px);
+  font-weight:600;
+  letter-spacing:-0.02em;
+  color:var(--text);
+  font-feature-settings:"tnum" 1;
+  word-break:break-word;
+}
+.kpi-delta{
+  position:absolute;top:10px;right:10px;
+  font-size:10px;font-weight:600;
+  padding:2px 6px;border-radius:5px;
+  opacity:0;transform:translateY(-2px);
+  transition:opacity 220ms ease, transform 220ms ease;
+  font-feature-settings:"tnum" 1;
+  display:flex;align-items:center;gap:3px;
+}
+.kpi-delta.show{opacity:1;transform:translateY(0)}
+.kpi-delta.good{background:rgba(34,197,94,0.12);color:var(--success)}
+.kpi-delta.bad{background:rgba(248,113,113,0.12);color:var(--warn)}
+.kpi-delta.neutral{background:rgba(255,255,255,0.06);color:var(--text-3)}
+
+/* SUPPLY MIX */
+.mix-bar{
+  display:flex;
+  height:14px;
+  border-radius:7px;
+  overflow:hidden;
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  margin-bottom:14px;
+}
+.mix-seg{
+  height:100%;
+  transition:width 600ms cubic-bezier(0.22,0.61,0.36,1);
+  position:relative;
+}
+.mix-seg + .mix-seg{box-shadow:inset 1px 0 0 rgba(0,0,0,0.25)}
+.mix-legend{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:8px 16px;
+}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)}
+.legend-swatch{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.legend-pct{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--text-3);font-feature-settings:"tnum" 1}
+
+/* ============ RIGHT PANEL — AGENT ============ */
+.agent{
+  display:flex;flex-direction:column;
+  background:linear-gradient(180deg,var(--surface) 0%,var(--surface-2) 100%);
+  border:1px solid var(--border);
+  border-radius:16px;
+  height:calc(100vh - 100px);
+  min-height:640px;
+  max-height:860px;
+  position:sticky;top:80px;
+  box-shadow:var(--shadow-2);
+  overflow:hidden;
+  min-width:0;
+  max-width:100%;
+}
+@media (max-width:1099px){
+  .agent{position:static;height:auto;min-height:520px;max-height:none}
+}
+
+.agent-head{
+  display:flex;align-items:center;gap:12px;
+  padding:18px 20px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(13,15,23,0.4),transparent);
+}
+.agent-avatar-wrap{position:relative;width:36px;height:36px;flex-shrink:0}
+.agent-avatar{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,#0099FF 0%,#33B0FF 60%,#53BDBF 110%);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:15px;color:#fff;
+  box-shadow:0 0 0 1px rgba(0,153,255,0.3),0 4px 14px rgba(0,153,255,0.35),inset 0 1px 0 rgba(255,255,255,0.25);
+  position:relative;z-index:2;
+}
+.pulse-ring{
+  position:absolute;inset:0;border-radius:10px;
+  border:2px solid var(--accent);
+  opacity:0;pointer-events:none;
+}
+.agent.active .pulse-ring{animation:pulse-ring 1.6s cubic-bezier(0.22,0.61,0.36,1) infinite}
+@keyframes pulse-ring{
+  0%{opacity:0.6;transform:scale(1)}
+  100%{opacity:0;transform:scale(1.6)}
+}
+.agent-id{flex:1;min-width:0}
+.agent-title{font-size:14.5px;font-weight:600;letter-spacing:-0.01em}
+.agent-status{font-size:11.5px;color:var(--text-3);margin-top:2px;display:flex;align-items:center;gap:6px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--text-3);flex-shrink:0}
+.agent.active .status-dot{background:var(--accent);box-shadow:0 0 8px rgba(0,153,255,0.6)}
+
+/* TOGGLE */
+.toggle{
+  width:42px;height:24px;border-radius:999px;
+  background:rgba(255,255,255,0.08);
+  position:relative;
+  transition:all 280ms cubic-bezier(0.22,0.61,0.36,1);
+  border:1px solid var(--border);
+  flex-shrink:0;
+}
+.toggle::after{
+  content:"";
+  position:absolute;
+  top:2px;left:2px;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,0.4);
+  transition:all 280ms cubic-bezier(0.22,0.61,0.36,1);
+}
+.toggle.on{
+  background:linear-gradient(135deg,#0099FF,#33B0FF);
+  border-color:rgba(0,153,255,0.5);
+  box-shadow:0 0 0 1px rgba(0,153,255,0.3),0 0 12px rgba(0,153,255,0.4);
+}
+.toggle.on::after{transform:translateX(18px)}
+
+/* CHAT */
+.chat{
+  flex:1;
+  overflow-y:auto;
+  padding:18px 20px 8px;
+  display:flex;flex-direction:column;gap:12px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,0.1) transparent;
+}
+.chat::-webkit-scrollbar{width:6px}
+.chat::-webkit-scrollbar-track{background:transparent}
+.chat::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
+.chat::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.16)}
+
+.msg{
+  display:flex;gap:10px;
+  animation:msg-in 250ms cubic-bezier(0.22,0.61,0.36,1) both;
+}
+@keyframes msg-in{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.msg-avatar{
+  width:26px;height:26px;border-radius:7px;
+  background:linear-gradient(135deg,#0099FF 0%,#33B0FF 60%,#53BDBF 110%);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:11px;color:#fff;
+  box-shadow:0 2px 8px rgba(0,153,255,0.3);
+  flex-shrink:0;
+}
+.msg-bubble{
+  max-width:84%;
+  padding:10px 13px;
+  border-radius:12px;
+  font-size:13px;line-height:1.5;
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  color:var(--text-2);
+  word-wrap:break-word;
+}
+.msg-bubble strong{color:var(--accent);font-weight:600}
+.msg-bubble em{color:var(--accent-2);font-style:normal;font-weight:500}
+
+.msg.user{justify-content:flex-end}
+.msg.user .msg-bubble{
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+
+.msg.system{justify-content:center;animation-duration:300ms}
+.msg.system .pill{
+  font-size:10px;font-weight:600;
+  letter-spacing:0.12em;text-transform:uppercase;
+  padding:4px 12px;border-radius:999px;
+  background:rgba(0,153,255,0.08);
+  border:1px solid rgba(0,153,255,0.2);
+  color:var(--accent);
+}
+
+.thinking{display:flex;gap:10px;align-items:flex-start;animation:msg-in 200ms ease both}
+.thinking-bubble{
+  padding:12px 14px;border-radius:12px;
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  display:flex;gap:4px;align-items:center;
+  height:32px;
+}
+.dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--text-3);
+  animation:bounce 1.2s infinite ease-in-out;
+}
+.dot:nth-child(2){animation-delay:0.15s}
+.dot:nth-child(3){animation-delay:0.3s}
+@keyframes bounce{
+  0%,80%,100%{transform:translateY(0);opacity:0.5}
+  40%{transform:translateY(-4px);opacity:1}
+}
+
+/* PROMPTS */
+.prompts{
+  border-top:1px solid var(--border);
+  padding:14px 20px;
+  background:rgba(13,15,23,0.5);
+  max-height:38%;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,0.1) transparent;
+}
+.prompts::-webkit-scrollbar{width:6px}
+.prompts::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
+.prompt-group{margin-bottom:10px}
+.prompt-group:last-child{margin-bottom:0}
+.prompt-cat{
+  font-size:9.5px;font-weight:600;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--text-3);
+  margin-bottom:6px;
+}
+.prompt-list{display:flex;flex-wrap:wrap;gap:6px}
+.prompt-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 11px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  color:var(--text-2);
+  font-size:12px;font-weight:500;
+  transition:all 160ms ease;
+  white-space:nowrap;
+}
+.prompt-btn:hover:not(:disabled){
+  background:rgba(0,153,255,0.08);
+  border-color:rgba(0,153,255,0.3);
+  color:var(--text);
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(0,153,255,0.1);
+}
+.prompt-btn:disabled{opacity:0.4;cursor:not-allowed}
+.prompt-btn.done{
+  background:rgba(0,153,255,0.06);
+  border-color:rgba(0,153,255,0.25);
+  color:var(--accent);
+}
+.prompt-btn .icon{font-size:11px;display:inline-flex;align-items:center;justify-content:center}
+.prompt-btn .check{color:var(--accent);font-weight:700}
+
+/* INPUT */
+.input-row{
+  border-top:1px solid var(--border);
+  padding:12px 16px;
+  display:flex;gap:8px;align-items:center;
+  background:rgba(4,7,13,0.4);
+}
+.input-row input{
+  flex:1;
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:9px 13px;
+  color:var(--text);
+  font-size:13px;
+  outline:none;
+  transition:border-color 160ms ease;
+}
+.input-row input::placeholder{color:var(--text-3)}
+.input-row input:focus{border-color:rgba(0,153,255,0.4)}
+.send-btn{
+  width:34px;height:34px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  color:var(--text-3);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  cursor:not-allowed;
+}
+.send-btn svg{width:14px;height:14px}
+
+/* ============ CLOSING OVERLAY ============ */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(4,7,13,0.78);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+  opacity:0;pointer-events:none;
+  transition:opacity 320ms ease;
+}
+.overlay.show{opacity:1;pointer-events:auto}
+.overlay-card{
+  max-width:640px;width:100%;
+  background:linear-gradient(180deg,var(--surface) 0%,var(--surface-2) 100%);
+  border:1px solid var(--border-strong);
+  border-radius:20px;
+  padding:40px 40px 36px;
+  box-shadow:var(--shadow-3);
+  position:relative;
+  transform:translateY(8px) scale(0.98);
+  transition:transform 320ms cubic-bezier(0.22,0.61,0.36,1);
+}
+.overlay.show .overlay-card{transform:translateY(0) scale(1)}
+.overlay-eyebrow{
+  font-size:10.5px;font-weight:600;
+  letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:14px;
+}
+.overlay-title{
+  font-family:var(--serif);
+  font-size:44px;font-weight:400;
+  line-height:1.05;letter-spacing:-0.02em;
+  margin-bottom:24px;
+  font-style:italic;
+}
+.overlay-list{list-style:none;padding:0;margin:0 0 28px}
+.overlay-list li{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+  font-size:15px;color:var(--text-2);
+}
+.overlay-list li:last-child{border-bottom:0}
+.overlay-list .check{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(0,153,255,0.12);
+  border:1px solid rgba(0,153,255,0.3);
+  color:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;flex-shrink:0;
+}
+.overlay-cta{
+  background:linear-gradient(135deg,rgba(0,153,255,0.1),rgba(83,189,191,0.05));
+  border:1px solid rgba(0,153,255,0.25);
+  border-radius:12px;
+  padding:18px 20px;
+  font-size:14.5px;line-height:1.5;
+  color:var(--text);
+}
+.overlay-close{
+  position:absolute;top:18px;right:18px;
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  color:var(--text-2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+  transition:all 160ms ease;
+}
+.overlay-close:hover{background:rgba(255,255,255,0.08);color:var(--text)}
+.overlay-hint{
+  position:absolute;
+  bottom:-32px;left:50%;transform:translateX(-50%);
+  font-size:11px;color:var(--text-3);
+  letter-spacing:0.05em;
+  white-space:nowrap;
+}
+.kbd{
+  display:inline-block;
+  padding:1px 6px;border-radius:4px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--border);
+  font-family:var(--mono);font-size:10.5px;
+  color:var(--text-2);
+}
+
+/* ============ LOGIN SCREEN ============ */
+.login-wrap{
+  position:fixed;inset:0;
+  z-index:300;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;
+  background:
+    radial-gradient(800px 400px at 50% 20%,rgba(0,153,255,0.10),transparent 70%),
+    radial-gradient(700px 400px at 50% 90%,rgba(83,189,191,0.06),transparent 70%),
+    var(--bg);
+  transition:opacity 480ms ease, visibility 480ms ease;
+}
+.login-wrap.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.login-card{
+  width:100%;
+  max-width:420px;
+  background:linear-gradient(180deg,var(--surface) 0%,var(--surface-2) 100%);
+  border:1px solid var(--border-strong);
+  border-radius:18px;
+  padding:36px 32px 28px;
+  box-shadow:var(--shadow-3);
+  text-align:center;
+  animation:login-in 600ms cubic-bezier(0.22,0.61,0.36,1) both;
+}
+@keyframes login-in{
+  from{opacity:0;transform:translateY(12px) scale(0.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.login-mark{
+  width:54px;height:54px;border-radius:14px;
+  background:linear-gradient(135deg,#0099FF 0%,#33B0FF 60%,#66C5FF 100%);
+  box-shadow:0 0 0 1px rgba(0,153,255,0.3),0 12px 36px rgba(0,153,255,0.45),inset 0 1px 0 rgba(255,255,255,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:24px;color:#fff;letter-spacing:-0.02em;
+  margin:0 auto 18px;
+}
+.login-title{
+  font-size:22px;font-weight:600;letter-spacing:-0.02em;
+  margin:0 0 6px;
+}
+.login-title .muted{color:var(--text-3);font-weight:400;margin-left:6px}
+.login-tag{
+  font-family:var(--serif);font-style:italic;
+  font-size:16px;color:var(--text-2);
+  margin:0 0 28px;
+  letter-spacing:-0.01em;
+}
+.login-form{display:flex;flex-direction:column;gap:10px;text-align:left}
+.login-field{display:flex;flex-direction:column;gap:5px}
+.login-field label{
+  font-size:10.5px;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--text-3);
+}
+.login-input{
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:11px 14px;
+  color:var(--text);
+  font-size:13.5px;
+  outline:none;
+  transition:border-color 160ms ease, box-shadow 160ms ease;
+  width:100%;
+}
+.login-input:focus{
+  border-color:rgba(0,153,255,0.55);
+  box-shadow:0 0 0 3px rgba(0,153,255,0.12);
+}
+.login-submit{
+  margin-top:14px;
+  padding:12px 16px;
+  border-radius:10px;
+  background:linear-gradient(135deg,#0099FF 0%,#33B0FF 100%);
+  color:#fff;font-size:13.5px;font-weight:600;letter-spacing:0.01em;
+  border:1px solid rgba(0,153,255,0.5);
+  box-shadow:0 4px 16px rgba(0,153,255,0.35),inset 0 1px 0 rgba(255,255,255,0.2);
+  transition:transform 120ms ease, box-shadow 200ms ease, filter 160ms ease;
+  width:100%;
+}
+.login-submit:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(0,153,255,0.45),inset 0 1px 0 rgba(255,255,255,0.25);filter:brightness(1.05)}
+.login-submit:active{transform:translateY(0)}
+.login-foot{
+  margin-top:22px;
+  font-size:11px;color:var(--text-3);
+  letter-spacing:0.04em;
+  text-align:center;
+}
+.login-foot a{color:var(--text-2);text-decoration:none;border-bottom:1px solid var(--border-strong)}
+.login-foot a:hover{color:var(--accent)}
+
+
+.shortcut-hint{
+  position:fixed;
+  bottom:16px;right:16px;
+  font-size:11px;color:var(--text-3);
+  background:rgba(13,15,23,0.85);
+  border:1px solid var(--border);
+  padding:6px 10px;border-radius:8px;
+  backdrop-filter:blur(8px);
+  z-index:40;
+  letter-spacing:0.02em;
+}
+
+</style>
+</head>
+<body>
+
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div class="login-mark">S</div>
+    <h1 class="login-title">Sherlock<span class="muted">for Buyers</span></h1>
+    <p class="login-tag">Supply-side intelligence. Buy-side outcomes.</p>
+    <form class="login-form" id="login-form" autocomplete="off">
+      <div class="login-field">
+        <label for="login-email">Work email</label>
+        <input class="login-input" id="login-email" type="email" placeholder="mike@rainagency.com" value="mike@rainagency.com"/>
+      </div>
+      <div class="login-field">
+        <label for="login-password">Password</label>
+        <input class="login-input" id="login-password" type="password" placeholder="••••••••••" value="demoaccess"/>
+      </div>
+      <button class="login-submit" type="submit">Sign in</button>
+    </form>
+    <div class="login-foot">Powered by MCG · <a href="https://wermcg.com" target="_blank" rel="noopener">wermcg.com</a></div>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">S</div>
+    <div class="brand-name">Sherlock<span class="muted">for Buyers</span></div>
+    <div class="divider"></div>
+    <nav class="crumbs">
+      <span class="crumb">Campaigns</span>
+      <span class="sep">›</span>
+      <span class="crumb active" id="crumb-campaign">EGO POWER+ Spring 2026</span>
+    </nav>
+  </div>
+  <div class="top-right">
+    <button class="btn-ghost" id="reset-btn" title="Reset demo">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 0 1 9.5-3.8"/><path d="M12 2v3h-3"/><path d="M13.5 8a5.5 5.5 0 0 1-9.5 3.8"/><path d="M4 14v-3h3"/></svg>
+      <span class="label-text">Reset</span>
+    </button>
+    <div class="persona">
+      <div class="avatar" id="persona-avatar">MC</div>
+      <div class="persona-text">
+        <span class="persona-name" id="persona-name">Mike Chen</span>
+        <span class="persona-meta" id="persona-meta">Director of Programmatic · Rain</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+  <section class="panel" id="console">
+    <div class="campaign-head">
+      <div class="campaign-row">
+        <h1 class="campaign-title" id="campaign-title">EGO POWER+ Spring 2026</h1>
+        <span class="pill-live"><span class="live-dot"></span>Live</span>
+      </div>
+      <div class="campaign-sub" id="campaign-sub">Lawn & Garden · CTV + Open-Web Video · US</div>
+    </div>
+
+    <div class="deals" id="deals"></div>
+
+    <div class="section-label">Performance · Last 7 Days</div>
+    <div class="kpis" id="kpis"></div>
+
+    <div class="section-label">Supply Mix</div>
+    <div class="mix-bar" id="mix-bar"></div>
+    <div class="mix-legend" id="mix-legend"></div>
+  </section>
+
+  <aside class="agent" id="agent-panel">
+    <header class="agent-head">
+      <div class="agent-avatar-wrap">
+        <div class="agent-avatar">S</div>
+        <div class="pulse-ring"></div>
+      </div>
+      <div class="agent-id">
+        <div class="agent-title">Sherlock Agent</div>
+        <div class="agent-status"><span class="status-dot"></span><span id="status-text">Idle · Activate to begin</span></div>
+      </div>
+      <button class="toggle" id="agent-toggle" aria-label="Activate agent"></button>
+    </header>
+
+    <div class="chat" id="chat" aria-live="polite"></div>
+
+    <div class="prompts" id="prompts"></div>
+
+    <div class="input-row">
+      <input type="text" placeholder="Ask Sherlock anything…" disabled/>
+      <button class="send-btn" disabled aria-label="Send">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8L14 2L8 14L7 9L2 8Z"/></svg>
+      </button>
+    </div>
+  </aside>
+</main>
+
+<div class="shortcut-hint"><span class="kbd">Shift</span> + <span class="kbd">C</span> — closing slide</div>
+
+<div class="overlay" id="overlay">
+  <div class="overlay-card">
+    <button class="overlay-close" id="overlay-close" aria-label="Close">✕</button>
+    <div class="overlay-eyebrow">Sherlock for Buyers</div>
+    <h2 class="overlay-title" id="overlay-title">What just happened</h2>
+    <ul class="overlay-list" id="overlay-list"></ul>
+    <div class="overlay-cta" id="overlay-cta"></div>
+    <div class="overlay-hint">Press <span class="kbd">ESC</span> to close</div>
+  </div>
+</div>
+
+<script>
+const CONFIG = {
+  brand: { name: "EGO POWER+", vertical: "Lawn & Garden — DTC" },
+  persona: { name: "Mike Chen", title: "Director of Programmatic", company: "Rain the Growth Agency", initials: "MC" },
+  campaign: { title: "EGO POWER+ Spring 2026", subtitle: "Lawn & Garden · CTV + Open-Web Video · US" },
+  deals: [
+    { ssp: "Magnite",        id: "MCG_EGO_SPRING_MAG_88421", type: "PMP", floor: "$24.50 CPM" },
+    { ssp: "Index Exchange", id: "MCG-EGO-IX-2026-0341",    type: "PMP", floor: "$22.00 CPM" }
+  ],
+  supply_mix: {
+    enabled: true,
+    segments: [
+      { label: "CTV — Premium",      pct: 38, color: "#0099FF" },
+      { label: "CTV — Long-tail",    pct: 22, color: "#66BFFF" },
+      { label: "Open-Web Video",     pct: 28, color: "#53BDBF" },
+      { label: "Resold / Hop-heavy", pct: 12, color: "#475569" }
+    ]
+  },
+  kpis: [
+    { id: "spend",           label: "Spend",         value: 184250,  format: "currency",         direction: null },
+    { id: "impressions",     label: "Impressions",   value: 4920000, format: "number_short",     direction: "up_is_good" },
+    { id: "cpm",             label: "Avg CPM",       value: 37.45,   format: "currency_decimal", direction: "down_is_good" },
+    { id: "viewability",     label: "Viewability",   value: 62,      format: "percent",          direction: "up_is_good" },
+    { id: "completion_rate", label: "VCR (CTV)",     value: 74,      format: "percent",          direction: "up_is_good" },
+    { id: "sessions",        label: "Site Sessions", value: 18420,   format: "number",           direction: "up_is_good" },
+    { id: "atc",             label: "Add to Cart",   value: 1240,    format: "number",           direction: "up_is_good" },
+    { id: "cpa",             label: "CPA",           value: 148.50,  format: "currency_decimal", direction: "down_is_good" }
+  ],
+  messages: {
+    welcome: "Hi Mike — I'm Sherlock for Buyers, deployed on the supply side.\n\nFlip the switch above to activate me on your Magnite and Index Exchange deals. Once active, I'll optimize without touching your DSP, your tags, or your trader's workflow.\n\nTry one of the prompts below to see how I work.",
+    activation: "Activated on **MCG_EGO_SPRING_MAG_88421** (Magnite) and **MCG-EGO-IX-2026-0341** (Index Exchange).\n\nNothing changed in your DSP. I'm now monitoring and optimizing on the SSP side — bidstream curation, supply path quality, attribution-aware inventory selection.\n\nWhat would you like me to work on first?"
+  },
+  prompts: [
+    {
+      id: "create_deal", category: "Onboarding", label: "Build a new deal", icon: "+", requires_active: false,
+      user_message: "Build me a deal for the EGO POWER+ Spring Lawn campaign — US, CTV + open-web video, DTC intent + retargeting audiences, $25 CPM cap.",
+      steps: [
+        { type: "thinking", duration: 1400 },
+        { type: "agent", text: "Got it — EGO POWER+, Spring 2026 Lawn & Garden, US, $25 CPM cap, CTV + open-web video, DTC intent + retargeting.", duration: 2200 },
+        { type: "agent", text: "Building deals on **Magnite** and **Index Exchange** in parallel...", duration: 2400 },
+        { type: "agent", text: "✓ Magnite: deal **MCG_EGO_SPRING_MAG_88421** created.\nCTV pool: Roku, Tubi, Pluto, Samsung TV+, LG Channels.\nOpen-web video: 70%+ viewability floor enforced.\nAudience layer attached: DTC outdoor intent + your retargeting pixel.", duration: 3000 },
+        { type: "agent", text: "✓ Index Exchange: deal **MCG-EGO-IX-2026-0341** created.\nSame audience layer.\nOpen-web video pool with sellers.json + ads.txt verification enforced upstream.", duration: 3000 },
+        { type: "agent", text: "Both deals are *LIVE* and ready to activate in your DSP. Paste the deal IDs into a DV360, TTD, or Amazon DSP line item — your trader's workflow is unchanged.\n\n**Time to onboard: 4 minutes. Compliance review: zero. Buy-side integration: zero.**", duration: 2400 }
+      ]
+    },
+    {
+      id: "ctv_attribution", category: "Optimization", label: "Fix flat conversions on CTV", icon: "📺", requires_active: true,
+      user_message: "My CTV spend is delivering completed views but website sessions and add-to-carts are flat. Fix it.",
+      steps: [
+        { type: "thinking", duration: 1500 },
+        { type: "agent", text: "Pulling CTV completion data and joining to your downstream session and ATC events on the supply side.", duration: 2000 },
+        { type: "agent", text: "Found the leak. **31% of your CTV completions** are concentrated in 6 inventory pods that drive only **4% of your sessions**. Classic completion-without-attention pattern — high VCR, dead funnel.", duration: 2800 },
+        { type: "agent", text: "Suppressing those pods on Magnite and Index. Reallocating to inventory with proven session lift for DTC outdoor verticals.", duration: 2400, kpi_changes: [{ id: "cpm", delta: 0.85 }] },
+        { type: "agent", text: "Rerouting in progress. Watching the metrics tick.", duration: 2200, kpi_changes: [{ id: "completion_rate", delta: -2 }, { id: "sessions", delta: 6240 }, { id: "atc", delta: 410 }] },
+        { type: "agent", text: "Settled. CTV completion rate dipped 2pts — *intentional*, those completions weren't earning. **Sessions up 34%. Add-to-Cart up 33%. CPA down 22%.**\n\nThis is what Rain calls Transactional Brand Building — CTV that drives short-term sales while protecting brand reach.", duration: 2600, kpi_changes: [{ id: "cpa", delta: -32.50 }] }
+      ]
+    },
+    {
+      id: "cpm_efficiency", category: "Optimization", label: "Reduce CPM by 15%", icon: "💰", requires_active: true,
+      user_message: "EGO is asking for a 15% CPM reduction by end of quarter. Find the savings without losing scale.",
+      steps: [
+        { type: "thinking", duration: 1500 },
+        { type: "agent", text: "Auditing your supply mix across both deals. Looking for equivalent inventory at lower clearing prices.", duration: 2200 },
+        { type: "agent", text: "Identified **$42K/month** flowing through hop-heavy supply paths — same publishers reachable via direct paths at **18-22% lower CPM**.", duration: 2400 },
+        { type: "agent", text: "Pruning **47 inefficient supply paths** on Magnite. Switching 12 publishers from open marketplace to direct PMP pricing on Index.", duration: 2400, kpi_changes: [{ id: "cpm", delta: -3.20 }, { id: "impressions", delta: 280000 }], supply_mix: [{ label: "CTV — Premium", pct: 42, color: "#0099FF" }, { label: "CTV — Long-tail", pct: 18, color: "#66BFFF" }, { label: "Open-Web Video", pct: 35, color: "#53BDBF" }, { label: "Resold / Hop-heavy", pct: 5, color: "#475569" }] },
+        { type: "agent", text: "Rebalancing. Protecting CTV scale and viewability while pushing CPM down.", duration: 2000, kpi_changes: [{ id: "cpm", delta: -2.45 }, { id: "impressions", delta: 360000 }, { id: "viewability", delta: 4 }] },
+        { type: "agent", text: "**CPM landed 15.1% lower at $31.80.** Scale held — impressions up 13%, viewability ticked up 4pts as a side effect of pruning the noise.\n\nTell EGO their cost target is hit. Tell your trader they didn't have to do anything.", duration: 2600, kpi_changes: [{ id: "atc", delta: 110 }, { id: "cpa", delta: -18.20 }] }
+      ]
+    }
+  ],
+  qna: [
+    { id: "qna_paths", label: "Why cut those 47 paths?", user_message: "Why did you cut those 47 supply paths?",
+      steps: [
+        { type: "thinking", duration: 800 },
+        { type: "agent", text: "Three reasons:\n\n**1. Resold inventory** — 31 paths were intermediated 2+ hops, adding 18-22% in fees with zero unique reach.\n**2. Low ads.txt match score** — 9 paths had inconsistent or unauthorized seller declarations.\n**3. No attention signal** — 7 paths showed completed-view rates above 85% but session lift in the bottom decile (classic farm signature).\n\nFull audit log is exportable to your team for verification.", duration: 2000 }
+      ]
+    },
+    { id: "qna_dsp_diff", label: "How is this different from a DSP?", user_message: "How is this different from what my DSP already does?",
+      steps: [
+        { type: "thinking", duration: 800 },
+        { type: "agent", text: "Three differences:\n\n**1. Position in the stack** — your DSP optimizes at bid time. I optimize at the supply curation layer, before the bid request even leaves the SSP. You get cleaner inputs.\n\n**2. No buy-side change** — DSP optimization requires trader configuration, pixel work, and ongoing tuning. I require zero buy-side work. Activate the deal, done.\n\n**3. Cross-DSP** — if Rain runs EGO across DV360 and TTD, my optimizations apply uniformly. A DSP only optimizes its own footprint.", duration: 2200 }
+      ]
+    },
+    { id: "qna_human", label: "Is there a human in the loop?", user_message: "Is there a human in the loop?",
+      steps: [
+        { type: "thinking", duration: 800 },
+        { type: "agent", text: "Yes. Three control modes:\n\n• *Auto* — I optimize within guardrails you set (max CPM movement, min scale, viewability floors).\n• *Suggest* — I surface every recommendation to your team for approval before applying.\n• *Audit* — I run in observation mode only, generating a daily report of what I would have done.\n\nEvery action I take is logged and exportable. Nothing's a black box.", duration: 2200 }
+      ]
+    },
+    { id: "qna_trader", label: "What does my trader do?", user_message: "What does my trader need to do differently?",
+      steps: [
+        { type: "thinking", duration: 800 },
+        { type: "agent", text: "Use the deal ID. That's it.\n\nYour trader keeps using DV360 / TTD / Amazon DSP exactly as they do today. They paste the MCG deal ID into a line item and activate. Workflow, reporting, bid logic — *unchanged*.\n\nThe agent is invisible to them. The performance lift is visible in their DSP.", duration: 2000 }
+      ]
+    },
+    { id: "qna_more_cpm", label: "Can you push CPM further?", user_message: "Can you push CPM down another 5%?",
+      steps: [
+        { type: "thinking", duration: 1100 },
+        { type: "agent", text: "Yes — but with a tradeoff to flag.\n\nTo find another 5%, three options:\n\n**(a)** Drop the viewability floor from 70% to 60% — saves ~$2 CPM, costs ~6 viewability points.\n**(b)** Cut Roku and Tubi from CTV — they're premium-priced. Saves CPM but cuts ~22% of CTV scale.\n**(c)** Loosen brand safety from IAS Tier 1 to Tier 2 — saves ~$1.50 CPM with marginal risk.\n\nMy recommendation for a Transactional Brand Building DTC like EGO: option (c). Want me to run it?", duration: 2400 }
+      ]
+    }
+  ],
+  closing: {
+    title: "What just happened",
+    bullets: [
+      "Zero buy-side integration",
+      "Zero compliance or vendor approval",
+      "Zero workflow change for your traders",
+      "All optimization logic deployed at the SSP"
+    ],
+    cta: "Want to run a 30-day pilot on one of your active EGO POWER+ campaigns? Pick the deal — we'll activate within 48 hours."
+  }
+};
+
+// ========== STATE ==========
+const state = {
+  active: false,
+  running: false,
+  kpis: {},
+  mix: null,
+  doneIds: new Set()
+};
+CONFIG.kpis.forEach(k => state.kpis[k.id] = k.value);
+state.mix = JSON.parse(JSON.stringify(CONFIG.supply_mix.segments));
+
+// ========== FORMATTERS ==========
+function fmt(value, format){
+  switch(format){
+    case "currency": return "$" + Math.round(value).toLocaleString("en-US");
+    case "currency_decimal": return "$" + value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    case "number": return Math.round(value).toLocaleString("en-US");
+    case "number_short":
+      if (value >= 1e6) return (value/1e6).toFixed(2) + "M";
+      if (value >= 1e3) return (value/1e3).toFixed(1) + "K";
+      return Math.round(value).toString();
+    case "percent": return Math.round(value) + "%";
+    default: return value;
+  }
+}
+function fmtDelta(delta, format){
+  const sign = delta > 0 ? "+" : "";
+  switch(format){
+    case "currency": return sign + "$" + Math.round(Math.abs(delta)).toLocaleString("en-US") + (delta < 0 ? "" : "");
+    case "currency_decimal": return (delta < 0 ? "-" : "+") + "$" + Math.abs(delta).toFixed(2);
+    case "number": return sign + Math.round(delta).toLocaleString("en-US");
+    case "number_short":
+      const a = Math.abs(delta);
+      if (a >= 1e6) return sign + (delta/1e6).toFixed(2) + "M";
+      if (a >= 1e3) return sign + (delta/1e3).toFixed(1) + "K";
+      return sign + Math.round(delta);
+    case "percent": return sign + Math.round(delta) + "pts";
+    default: return sign + delta;
+  }
+}
+
+// ========== RENDER: DEALS ==========
+function renderDeals(){
+  const el = document.getElementById("deals");
+  el.innerHTML = "";
+  CONFIG.deals.forEach(d => {
+    const card = document.createElement("div");
+    card.className = "deal" + (state.active ? " active" : "");
+    card.innerHTML = `
+      <div class="deal-head">
+        <span class="deal-ssp">${d.ssp}</span>
+        <span class="deal-type">${d.type}</span>
+      </div>
+      <div class="deal-id">${d.id}</div>
+      <div class="deal-floor">Floor <strong>${d.floor}</strong></div>
+    `;
+    el.appendChild(card);
+  });
+}
+
+// ========== RENDER: KPIs ==========
+function renderKpis(){
+  const el = document.getElementById("kpis");
+  el.innerHTML = "";
+  CONFIG.kpis.forEach(k => {
+    const tile = document.createElement("div");
+    tile.className = "kpi";
+    tile.id = "kpi-" + k.id;
+    tile.innerHTML = `
+      <div class="kpi-delta" id="delta-${k.id}"></div>
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value tnum" id="val-${k.id}">${fmt(state.kpis[k.id], k.format)}</div>
+    `;
+    el.appendChild(tile);
+  });
+}
+
+// ========== RENDER: SUPPLY MIX ==========
+function renderMix(){
+  const bar = document.getElementById("mix-bar");
+  const legend = document.getElementById("mix-legend");
+  bar.innerHTML = "";
+  legend.innerHTML = "";
+  state.mix.forEach((s, i) => {
+    const seg = document.createElement("div");
+    seg.className = "mix-seg";
+    seg.style.background = s.color;
+    seg.style.width = s.pct + "%";
+    seg.id = "seg-" + i;
+    bar.appendChild(seg);
+
+    const li = document.createElement("div");
+    li.className = "legend-item";
+    li.innerHTML = `
+      <span class="legend-swatch" style="background:${s.color}"></span>
+      <span>${s.label}</span>
+      <span class="legend-pct" id="pct-${i}">${s.pct}%</span>
+    `;
+    legend.appendChild(li);
+  });
+}
+
+function updateMix(newSegments){
+  // map new segments by label and update existing
+  newSegments.forEach((ns, i) => {
+    const existing = state.mix[i];
+    if (existing){
+      existing.pct = ns.pct;
+      existing.color = ns.color;
+      existing.label = ns.label;
+      const seg = document.getElementById("seg-" + i);
+      if (seg) seg.style.width = ns.pct + "%";
+      const pctEl = document.getElementById("pct-" + i);
+      if (pctEl) pctEl.textContent = ns.pct + "%";
+    }
+  });
+}
+
+// ========== KPI ANIMATION ==========
+function animateKpi(id, delta){
+  const k = CONFIG.kpis.find(x => x.id === id);
+  if (!k) return;
+  const startVal = state.kpis[id];
+  const endVal = startVal + delta;
+  state.kpis[id] = endVal;
+
+  const valEl = document.getElementById("val-" + id);
+  const deltaEl = document.getElementById("delta-" + id);
+  const tile = document.getElementById("kpi-" + id);
+
+  // Flash border
+  tile.classList.add("flash");
+  setTimeout(() => tile.classList.remove("flash"), 1200);
+
+  // Delta badge
+  let cls = "neutral";
+  if (k.direction === "up_is_good") cls = delta > 0 ? "good" : (delta < 0 ? "bad" : "neutral");
+  else if (k.direction === "down_is_good") cls = delta < 0 ? "good" : (delta > 0 ? "bad" : "neutral");
+  deltaEl.className = "kpi-delta " + cls;
+  deltaEl.textContent = fmtDelta(delta, k.format);
+  // trigger transition
+  requestAnimationFrame(() => deltaEl.classList.add("show"));
+
+  // Count-up
+  const duration = 900;
+  const start = performance.now();
+  function tick(now){
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const cur = startVal + (endVal - startVal) * eased;
+    valEl.textContent = fmt(cur, k.format);
+    if (t < 1) requestAnimationFrame(tick);
+    else valEl.textContent = fmt(endVal, k.format);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ========== CHAT ==========
+function renderMarkdown(text){
+  // Escape HTML first
+  const esc = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  // Bold (must come before italic to handle ** correctly)
+  let out = esc.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  out = out.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  // Newlines
+  out = out.replace(/\n/g, '<br>');
+  return out;
+}
+
+function appendMessage(type, text){
+  const chat = document.getElementById("chat");
+  const msg = document.createElement("div");
+  msg.className = "msg " + type;
+
+  if (type === "system"){
+    msg.innerHTML = `<span class="pill">${text}</span>`;
+  } else if (type === "user"){
+    msg.innerHTML = `<div class="msg-bubble">${renderMarkdown(text)}</div>`;
+  } else {
+    msg.innerHTML = `
+      <div class="msg-avatar">S</div>
+      <div class="msg-bubble">${renderMarkdown(text)}</div>
+    `;
+  }
+  chat.appendChild(msg);
+  scrollChat();
+  return msg;
+}
+
+function appendThinking(){
+  const chat = document.getElementById("chat");
+  const t = document.createElement("div");
+  t.className = "msg agent thinking";
+  t.id = "thinking-indicator";
+  t.innerHTML = `
+    <div class="msg-avatar">S</div>
+    <div class="thinking-bubble">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+  `;
+  chat.appendChild(t);
+  scrollChat();
+}
+function removeThinking(){
+  const t = document.getElementById("thinking-indicator");
+  if (t) t.remove();
+}
+
+function scrollChat(){
+  const chat = document.getElementById("chat");
+  // smooth scroll to bottom
+  requestAnimationFrame(() => {
+    chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
+  });
+}
+
+// ========== PROMPTS ==========
+function renderPrompts(){
+  const el = document.getElementById("prompts");
+  el.innerHTML = "";
+  // group prompts by category
+  const allPrompts = [...CONFIG.prompts];
+  const categories = {};
+  allPrompts.forEach(p => {
+    if (!categories[p.category]) categories[p.category] = [];
+    categories[p.category].push(p);
+  });
+  // Q&A as its own category
+  categories["Follow-up Q&A"] = CONFIG.qna.map(q => ({
+    id: q.id, category: "Follow-up Q&A", label: q.label, icon: null, requires_active: true,
+    user_message: q.user_message, steps: q.steps
+  }));
+
+  Object.keys(categories).forEach(cat => {
+    const group = document.createElement("div");
+    group.className = "prompt-group";
+    const heading = document.createElement("div");
+    heading.className = "prompt-cat";
+    heading.textContent = cat;
+    group.appendChild(heading);
+
+    const list = document.createElement("div");
+    list.className = "prompt-list";
+    categories[cat].forEach(p => {
+      const btn = document.createElement("button");
+      btn.className = "prompt-btn";
+      btn.dataset.id = p.id;
+      btn.dataset.requiresActive = p.requires_active ? "1" : "0";
+      const iconHtml = p.icon ? `<span class="icon">${p.icon}</span>` : "";
+      btn.innerHTML = `${iconHtml}<span class="lbl">${p.label}</span>`;
+      btn.addEventListener("click", () => runPrompt(p));
+      list.appendChild(btn);
+    });
+    group.appendChild(list);
+    el.appendChild(group);
+  });
+  updatePromptStates();
+}
+
+function updatePromptStates(){
+  document.querySelectorAll(".prompt-btn").forEach(btn => {
+    const id = btn.dataset.id;
+    const requiresActive = btn.dataset.requiresActive === "1";
+    const isDone = state.doneIds.has(id);
+    const isRunning = state.running;
+    const blocked = isRunning || (requiresActive && !state.active);
+    btn.disabled = blocked;
+    btn.classList.toggle("done", isDone);
+    // Add or update check mark
+    const lbl = btn.querySelector(".lbl");
+    let chk = btn.querySelector(".check");
+    if (isDone && !chk){
+      chk = document.createElement("span");
+      chk.className = "check";
+      chk.textContent = "✓";
+      btn.insertBefore(chk, lbl);
+    } else if (!isDone && chk){
+      chk.remove();
+    }
+  });
+}
+
+// ========== RUN PROMPT ==========
+async function runPrompt(p){
+  if (state.running) return;
+  if (p.requires_active && !state.active) return;
+  state.running = true;
+  updatePromptStates();
+
+  appendMessage("user", p.user_message);
+  await wait(280);
+
+  for (const step of p.steps){
+    if (step.type === "thinking"){
+      appendThinking();
+      await wait(step.duration);
+      removeThinking();
+    } else if (step.type === "agent"){
+      appendMessage("agent", step.text);
+      if (step.kpi_changes){
+        step.kpi_changes.forEach(c => animateKpi(c.id, c.delta));
+      }
+      if (step.supply_mix){
+        updateMix(step.supply_mix);
+      }
+      await wait(step.duration);
+    } else if (step.type === "system"){
+      appendMessage("system", step.text);
+      await wait(step.duration || 600);
+    }
+  }
+
+  state.doneIds.add(p.id);
+  state.running = false;
+  updatePromptStates();
+}
+
+function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+// ========== AGENT TOGGLE ==========
+function toggleAgent(){
+  if (state.running) return;
+  state.active = !state.active;
+  const toggle = document.getElementById("agent-toggle");
+  const panel = document.getElementById("agent-panel");
+  const status = document.getElementById("status-text");
+  toggle.classList.toggle("on", state.active);
+  panel.classList.toggle("active", state.active);
+  status.textContent = state.active ? "Active · Optimizing both deals" : "Idle · Activate to begin";
+  renderDeals();
+  updatePromptStates();
+
+  if (state.active){
+    setTimeout(() => {
+      appendMessage("system", "Agent activated");
+      setTimeout(() => {
+        appendMessage("agent", CONFIG.messages.activation);
+      }, 320);
+    }, 100);
+  }
+}
+
+// ========== RESET ==========
+function reset(){
+  // Reset KPIs
+  CONFIG.kpis.forEach(k => state.kpis[k.id] = k.value);
+  // Reset mix
+  state.mix = JSON.parse(JSON.stringify(CONFIG.supply_mix.segments));
+  // Clear chat
+  document.getElementById("chat").innerHTML = "";
+  // Clear delta badges & flashes
+  document.querySelectorAll(".kpi-delta").forEach(d => { d.className = "kpi-delta"; d.textContent = ""; });
+  document.querySelectorAll(".kpi.flash").forEach(t => t.classList.remove("flash"));
+  // Reset state
+  state.active = false;
+  state.running = false;
+  state.doneIds.clear();
+  document.getElementById("agent-toggle").classList.remove("on");
+  document.getElementById("agent-panel").classList.remove("active");
+  document.getElementById("status-text").textContent = "Idle · Activate to begin";
+  // Re-render
+  renderDeals();
+  renderKpis();
+  renderMix();
+  updatePromptStates();
+  // Welcome message
+  appendMessage("agent", CONFIG.messages.welcome);
+}
+
+// ========== CLOSING OVERLAY ==========
+function renderOverlay(){
+  document.getElementById("overlay-title").textContent = CONFIG.closing.title;
+  const list = document.getElementById("overlay-list");
+  list.innerHTML = "";
+  CONFIG.closing.bullets.forEach(b => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="check">✓</span><span>${b}</span>`;
+    list.appendChild(li);
+  });
+  document.getElementById("overlay-cta").textContent = CONFIG.closing.cta;
+}
+function showOverlay(){ document.getElementById("overlay").classList.add("show"); }
+function hideOverlay(){ document.getElementById("overlay").classList.remove("show"); }
+
+// ========== PERSONA & CAMPAIGN HEADER ==========
+function renderHeaders(){
+  document.getElementById("persona-avatar").textContent = CONFIG.persona.initials;
+  document.getElementById("persona-name").textContent = CONFIG.persona.name;
+  document.getElementById("persona-meta").textContent = `${CONFIG.persona.title} · ${CONFIG.persona.company.split(" ")[0]}`;
+  document.getElementById("campaign-title").textContent = CONFIG.campaign.title;
+  document.getElementById("campaign-sub").textContent = CONFIG.campaign.subtitle;
+  document.getElementById("crumb-campaign").textContent = CONFIG.campaign.title;
+}
+
+// ========== INIT ==========
+function init(){
+  renderHeaders();
+  renderDeals();
+  renderKpis();
+  renderMix();
+  renderPrompts();
+  renderOverlay();
+  appendMessage("agent", CONFIG.messages.welcome);
+
+  document.getElementById("agent-toggle").addEventListener("click", toggleAgent);
+  document.getElementById("reset-btn").addEventListener("click", reset);
+  document.getElementById("overlay-close").addEventListener("click", hideOverlay);
+  document.getElementById("overlay").addEventListener("click", (e) => {
+    if (e.target.id === "overlay") hideOverlay();
+  });
+
+  const loginForm = document.getElementById("login-form");
+  const loginWrap = document.getElementById("login-wrap");
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    loginWrap.classList.add("hidden");
+    setTimeout(() => { loginWrap.style.display = "none"; }, 520);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (loginWrap && !loginWrap.classList.contains("hidden")) return;
+    if (e.shiftKey && (e.key === "C" || e.key === "c")){
+      e.preventDefault();
+      showOverlay();
+    } else if (e.key === "Escape"){
+      hideOverlay();
+    }
+  });
+}
+
+if (document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+</script>
+</body></html>

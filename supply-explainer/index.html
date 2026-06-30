@@ -1,0 +1,822 @@
+<!-- ============================================================
+     MCG SUPPLY EXPLAINER — interactive supply-chain explainer
+     Drop between your Framer header and footer (HTML Embed).
+     Self-contained: Tailwind CDN + Google Fonts + vanilla JS.
+     Accent: #53BDBF   Brand system matches /careers + /press.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#0A0E14', graphite: '#141920', slate: '#1F2630',
+          mist: '#F5F6F7', bone: '#EDEEF0',
+          accent: '#53BDBF', accentDim: '#3FA5A7', accentSoft: '#7FD2D4',
+        },
+        fontFamily: {
+          sans: ['"Inter Tight"', 'system-ui', 'sans-serif'],
+          serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+          mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  .mcg-sx { background:#0A0E14; color:#EDEEF0; font-family:'Inter Tight',system-ui,sans-serif;
+            -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+  .mcg-sx * { box-sizing:border-box; }
+
+  /* ---- texture layers (match careers/press) ---- */
+  .mcg-sx .grain::before { content:''; position:absolute; inset:0;
+    background-image:url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/></svg>");
+    opacity:0.04; pointer-events:none; mix-blend-mode:overlay; }
+  .mcg-sx .aurora { position:absolute; inset:-20%; pointer-events:none; filter:blur(40px);
+    background:
+      radial-gradient(60% 50% at 20% 30%, rgba(83,189,191,0.14), transparent 60%),
+      radial-gradient(50% 50% at 80% 20%, rgba(83,189,191,0.08), transparent 55%),
+      radial-gradient(70% 60% at 60% 90%, rgba(83,189,191,0.06), transparent 60%); }
+  .mcg-sx .fine-grid {
+    background-image:
+      linear-gradient(to right, rgba(237,238,240,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(237,238,240,0.04) 1px, transparent 1px);
+    background-size:64px 64px; }
+
+  /* ---- type ---- */
+  .mcg-sx .eyebrow { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; font-weight:500;
+    letter-spacing:0.18em; text-transform:uppercase; color:#53BDBF; }
+  .mcg-sx .num-marker { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:13px;
+    letter-spacing:0.1em; color:rgba(237,238,240,0.4); }
+  .mcg-sx .display { font-family:'Inter Tight',system-ui,sans-serif; font-weight:600;
+    letter-spacing:-0.04em; line-height:0.95; }
+  .mcg-sx .serif-italic { font-family:'Instrument Serif',Georgia,serif; font-style:italic;
+    font-weight:400; letter-spacing:-0.02em; }
+  .mcg-sx .mono { font-family:'JetBrains Mono',ui-monospace,monospace; }
+
+  .mcg-sx .marker-line { display:inline-block; height:1px; width:48px;
+    background:linear-gradient(to right, rgba(83,189,191,0.8), transparent); }
+  .mcg-sx .section-rule { border-top:1px solid rgba(237,238,240,0.08); }
+
+  /* ---- buttons ---- */
+  .mcg-sx .btn-primary { background:#53BDBF; color:#0A0E14;
+    transition:transform 180ms ease, background 180ms ease, box-shadow 180ms ease; }
+  .mcg-sx .btn-primary:hover { background:#3FA5A7; transform:translateY(-1px);
+    box-shadow:0 10px 30px -10px rgba(83,189,191,0.5); }
+  .mcg-sx .btn-ghost { border:1px solid rgba(237,238,240,0.2); color:#EDEEF0;
+    transition:border-color 180ms ease, background 180ms ease; }
+  .mcg-sx .btn-ghost:hover { border-color:rgba(237,238,240,0.6); background:rgba(237,238,240,0.04); }
+
+  .mcg-sx .card { background:linear-gradient(180deg, rgba(237,238,240,0.03) 0%, rgba(237,238,240,0.01) 100%);
+    border:1px solid rgba(237,238,240,0.08); transition:border-color 220ms ease, background 220ms ease; }
+  .mcg-sx .card:hover { border-color:rgba(83,189,191,0.4); }
+
+  /* ---- the problem / with-MCG toggle ---- */
+  .mcg-sx .toggle { display:inline-flex; align-items:center; gap:2px; padding:4px;
+    border:1px solid rgba(237,238,240,0.12); border-radius:999px; background:rgba(10,14,20,0.6); }
+  .mcg-sx .toggle button { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px;
+    letter-spacing:0.08em; text-transform:uppercase; padding:7px 16px; border-radius:999px;
+    color:rgba(237,238,240,0.55); transition:all 200ms ease; white-space:nowrap; }
+  .mcg-sx .toggle button.on { background:#53BDBF; color:#0A0E14; }
+  .mcg-sx .toggle button.on.problem { background:#E8845B; color:#0A0E14; }
+
+  /* shared module fade between states */
+  .mcg-sx .stage .state { transition:opacity 320ms ease; }
+
+  /* ---- SVG diagram primitives ---- */
+  .mcg-sx svg text { font-family:'JetBrains Mono',ui-monospace,monospace; }
+  .mcg-sx .node-rect { fill:rgba(237,238,240,0.03); stroke:rgba(237,238,240,0.18); }
+  .mcg-sx .node-label { fill:#EDEEF0; }
+  .mcg-sx .node-sub { fill:rgba(237,238,240,0.45); }
+  .mcg-sx .wire { stroke:rgba(237,238,240,0.18); fill:none; }
+  .mcg-sx .wire-warn { stroke:#E8845B; }
+  .mcg-sx .wire-good { stroke:#53BDBF; }
+  .mcg-sx .accent-fill { fill:#53BDBF; }
+  .mcg-sx .warn-fill { fill:#E8845B; }
+
+  @keyframes dashflow { to { stroke-dashoffset:-200; } }
+  .mcg-sx .flowing { stroke-dasharray:5 10; animation:dashflow 4s linear infinite; }
+
+  @keyframes mcg-rise { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
+  .mcg-sx .rise { animation:mcg-rise 700ms cubic-bezier(0.2,0.8,0.2,1) both; }
+  .mcg-sx .rise-1{animation-delay:80ms;} .mcg-sx .rise-2{animation-delay:180ms;}
+  .mcg-sx .rise-3{animation-delay:280ms;} .mcg-sx .rise-4{animation-delay:380ms;}
+
+  /* in-view reveal for modules */
+  .mcg-sx .reveal { opacity:0; transform:translateY(24px); transition:opacity 700ms ease, transform 700ms cubic-bezier(0.2,0.8,0.2,1); }
+  .mcg-sx .reveal.in { opacity:1; transform:none; }
+
+  /* bid-duplication cards */
+  .mcg-sx .dup-card { transition:opacity 360ms ease, transform 360ms ease; }
+
+  /* communication node web */
+  .mcg-sx .ssp-line { transition:opacity 400ms ease, stroke 400ms ease; }
+  .mcg-sx .ssp-dot { transition:opacity 400ms ease; }
+
+  /* bias bars */
+  .mcg-sx .bias-bar { transition:width 700ms cubic-bezier(0.2,0.8,0.2,1), background 400ms ease; }
+
+  /* price routes */
+  .mcg-sx .route { transition:opacity 300ms ease, stroke 300ms ease, stroke-width 300ms ease; cursor:pointer; }
+  .mcg-sx .pub-hit { cursor:pointer; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mcg-sx .rise, .mcg-sx .reveal { animation:none !important; opacity:1 !important; transform:none !important; }
+    .mcg-sx .flowing { animation:none; }
+  }
+</style>
+
+<main class="mcg-sx">
+
+  <!-- ============================ HERO ============================ -->
+  <section class="relative overflow-hidden grain">
+    <div class="aurora"></div>
+    <div class="absolute inset-0 fine-grid opacity-60"></div>
+
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-10 pt-20 pb-16 md:pt-28 md:pb-20">
+      <div class="flex items-center gap-3 rise rise-1">
+        <span class="marker-line"></span>
+        <span class="eyebrow">The supply chain, upstream</span>
+      </div>
+
+      <h1 class="display text-[clamp(2.5rem,8vw,6.5rem)] text-bone mt-6 max-w-5xl rise rise-2">
+        One layer that makes the
+        <span class="serif-italic text-accent">supply side</span>
+        make sense.
+      </h1>
+
+      <p class="mt-8 max-w-2xl text-lg md:text-xl text-bone/70 leading-relaxed rise rise-3">
+        Between your DSP and the publisher sits a tangle of SSPs, exchanges, and duplicate
+        deals. MCG is the upstream supply-management layer that wraps the whole supply side —
+        one point of contact that structures, de-duplicates, and routes your inventory so
+        every dollar reaches the source on the best possible terms.
+      </p>
+
+      <!-- the lumascape flow -->
+      <div class="mt-14 rise rise-4">
+        <svg viewBox="0 0 1000 260" class="w-full" role="img" aria-label="Money flows from Agency to DSP to SSP to Publisher; MCG wraps the SSP and publisher side.">
+          <defs>
+            <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="rgba(237,238,240,0.5)"/>
+            </marker>
+          </defs>
+
+          <!-- MCG wrapper around SSP + Publisher -->
+          <rect x="558" y="40" width="412" height="170" rx="16"
+                fill="rgba(83,189,191,0.05)" stroke="#53BDBF" stroke-dasharray="6 5"/>
+          <text x="764" y="30" text-anchor="middle" class="accent-fill" font-size="13" letter-spacing="2">MCG · UPSTREAM SUPPLY MANAGEMENT</text>
+
+          <!-- nodes -->
+          <g>
+            <rect class="node-rect" x="20"  y="95" width="150" height="70" rx="10"/>
+            <text class="node-label" x="95"  y="128" text-anchor="middle" font-size="16">Agency</text>
+            <text class="node-sub"   x="95"  y="148" text-anchor="middle" font-size="11">the buyer</text>
+
+            <rect class="node-rect" x="250" y="95" width="150" height="70" rx="10"/>
+            <text class="node-label" x="325" y="128" text-anchor="middle" font-size="16">DSP</text>
+            <text class="node-sub"   x="325" y="148" text-anchor="middle" font-size="11">demand platform</text>
+
+            <rect class="node-rect" x="588" y="95" width="150" height="70" rx="10"/>
+            <text class="node-label" x="663" y="128" text-anchor="middle" font-size="16">SSP / Exchange</text>
+            <text class="node-sub"   x="663" y="148" text-anchor="middle" font-size="11">×20 of them</text>
+
+            <rect class="node-rect" x="818" y="95" width="132" height="70" rx="10"/>
+            <text class="node-label" x="884" y="128" text-anchor="middle" font-size="16">Publisher</text>
+            <text class="node-sub"   x="884" y="148" text-anchor="middle" font-size="11">the source</text>
+          </g>
+
+          <!-- wires + money -->
+          <line class="wire flowing" x1="170" y1="130" x2="250" y2="130" marker-end="url(#ah)"/>
+          <line class="wire flowing" x1="400" y1="130" x2="588" y2="130" marker-end="url(#ah)"/>
+          <line class="wire flowing" x1="738" y1="130" x2="818" y2="130" marker-end="url(#ah)"/>
+          <text class="accent-fill" x="210" y="118" text-anchor="middle" font-size="15">$</text>
+          <text class="accent-fill" x="494" y="118" text-anchor="middle" font-size="15">$</text>
+          <text class="accent-fill" x="778" y="118" text-anchor="middle" font-size="15">$</text>
+        </svg>
+      </div>
+
+      <div class="mt-10 flex flex-wrap items-center gap-3 rise rise-4">
+        <a href="#issue-1" data-scroll class="btn-primary inline-flex items-center gap-2 px-6 py-3.5 font-medium rounded-full">
+          Zoom in on the problems
+          <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 2v8M6 10L2 6M6 10l4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+
+      <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 border-t border-white/5 pt-8">
+        <div><div class="num-marker">— 01</div><div class="mt-2 text-bone/90 text-sm">Bid duplication</div></div>
+        <div><div class="num-marker">— 02</div><div class="mt-2 text-bone/90 text-sm">Deal mapping</div></div>
+        <div><div class="num-marker">— 03</div><div class="mt-2 text-bone/90 text-sm">One point of contact</div></div>
+        <div><div class="num-marker">— 04</div><div class="mt-2 text-bone/90 text-sm">Bias &amp; price optimization</div></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ==================== ISSUE 1 — BID DUPLICATION ==================== -->
+  <section id="issue-1" class="relative section-rule reveal">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 py-20 md:py-28">
+      <div class="grid md:grid-cols-12 gap-10 items-start">
+        <div class="md:col-span-5">
+          <div class="display text-6xl text-accent">01</div>
+          <span class="eyebrow block mt-4">Bid duplication</span>
+          <h2 class="display text-4xl md:text-5xl text-bone mt-3">
+            One impression. <span class="serif-italic text-accent">Four bids.</span>
+          </h2>
+          <p class="mt-6 text-bone/70 leading-relaxed">
+            The same ad request — one real user, one impression opportunity — enters the open
+            market through multiple SSPs and multiple accounts. By the time it reaches your DSP
+            it has been duplicated <span class="text-bone font-medium">four times over</span>:
+            same domain, same user, but each copy carries a different price and slightly
+            different metadata. Your DSP can't tell it's bidding against itself.
+          </p>
+          <p class="mt-4 text-bone/70 leading-relaxed">
+            MCG sees the full picture upstream and collapses the duplicates back into the single
+            opportunity they always were — so you bid once, cleanly.
+          </p>
+          <div class="mt-8 toggle" data-toggle="dup">
+            <button class="on problem" data-state="raw">Raw market</button>
+            <button data-state="mcg">With MCG</button>
+          </div>
+        </div>
+
+        <div class="md:col-span-7 stage" data-stage="dup">
+          <div class="card rounded-2xl p-6 md:p-8">
+            <div class="flex items-center justify-between mb-6">
+              <div class="text-bone/60 text-sm">Publisher impression</div>
+              <div class="mono text-sm" data-dup-count>×4 duplication</div>
+            </div>
+
+            <!-- the single source impression -->
+            <div class="flex items-center justify-center mb-6">
+              <div class="inline-flex items-center gap-3 px-4 py-2 rounded-lg" style="border:1px solid rgba(83,189,191,0.4); background:rgba(83,189,191,0.06);">
+                <span class="accent-fill mono text-sm" style="color:#53BDBF">1 OPPORTUNITY</span>
+                <span class="text-bone/50 text-xs mono">samedomain.com · user #8842</span>
+              </div>
+            </div>
+
+            <div class="text-center text-bone/30 text-xs mono mb-4">↓ enters via SSP A &amp; SSP B, two accounts each ↓</div>
+
+            <!-- duplicate bids arriving at DSP -->
+            <div class="grid grid-cols-2 gap-3" data-dup-grid>
+              <div class="dup-card rounded-lg p-4" style="border:1px solid rgba(232,132,91,0.35); background:rgba(232,132,91,0.05);">
+                <div class="mono text-xs text-bone/50">via SSP A · acct 1</div>
+                <div class="mono text-lg text-bone mt-1">$4.20</div>
+                <div class="mono text-[10px] text-bone/40 mt-1">fmt: video · pos: atf</div>
+              </div>
+              <div class="dup-card rounded-lg p-4" style="border:1px solid rgba(232,132,91,0.35); background:rgba(232,132,91,0.05);">
+                <div class="mono text-xs text-bone/50">via SSP A · acct 2</div>
+                <div class="mono text-lg text-bone mt-1">$4.65</div>
+                <div class="mono text-[10px] text-bone/40 mt-1">fmt: video · pos: —</div>
+              </div>
+              <div class="dup-card rounded-lg p-4" style="border:1px solid rgba(232,132,91,0.35); background:rgba(232,132,91,0.05);">
+                <div class="mono text-xs text-bone/50">via SSP B · acct 1</div>
+                <div class="mono text-lg text-bone mt-1">$3.95</div>
+                <div class="mono text-[10px] text-bone/40 mt-1">fmt: instream · pos: atf</div>
+              </div>
+              <div class="dup-card rounded-lg p-4" style="border:1px solid rgba(232,132,91,0.35); background:rgba(232,132,91,0.05);">
+                <div class="mono text-xs text-bone/50">via SSP B · acct 2</div>
+                <div class="mono text-lg text-bone mt-1">$5.10</div>
+                <div class="mono text-[10px] text-bone/40 mt-1">fmt: video · pos: btf</div>
+              </div>
+            </div>
+
+            <!-- the MCG-resolved single bid (hidden until toggled) -->
+            <div data-dup-resolved class="hidden mt-1">
+              <div class="rounded-lg p-5 flex items-center justify-between" style="border:1px solid rgba(83,189,191,0.5); background:rgba(83,189,191,0.07);">
+                <div>
+                  <div class="mono text-xs" style="color:#53BDBF">DE-DUPLICATED · ONE CLEAN REQUEST</div>
+                  <div class="mono text-[10px] text-bone/45 mt-1">samedomain.com · user #8842 · video · atf</div>
+                </div>
+                <div class="mono text-2xl text-bone">$3.95</div>
+              </div>
+              <div class="text-center text-bone/45 text-xs mt-3">Bid once, at the lowest honest floor — no self-competition.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ==================== ISSUE 2 — DEAL MAPPING ==================== -->
+  <section id="issue-2" class="relative section-rule reveal">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 py-20 md:py-28">
+      <div class="grid md:grid-cols-12 gap-10 items-start">
+        <div class="md:col-span-5">
+          <div class="display text-6xl text-accent">02</div>
+          <span class="eyebrow block mt-4">Deal mapping</span>
+          <h2 class="display text-4xl md:text-5xl text-bone mt-3">
+            Thousands of deal IDs. <span class="serif-italic text-accent">No map.</span>
+          </h2>
+          <p class="mt-6 text-bone/70 leading-relaxed">
+            SSPs strike deals with publishers, and publishers mint deal IDs by the thousand —
+            one for live sports, one for VOD, on and on. Each SSP describes the same inventory
+            differently: <span class="text-bone font-medium">name, format, and quality</span>
+            never line up. Matching that sprawl to what a buyer actually wants is a nightmare.
+          </p>
+          <p class="mt-4 text-bone/70 leading-relaxed">
+            MCG normalizes every deal into one taxonomy and maps it straight to buyer intent —
+            so a request for "live sports, premium" returns exactly that, across every SSP.
+          </p>
+          <div class="mt-8 toggle" data-toggle="deal">
+            <button class="on problem" data-state="raw">Raw deal IDs</button>
+            <button data-state="mcg">Mapped by MCG</button>
+          </div>
+        </div>
+
+        <div class="md:col-span-7 stage" data-stage="deal">
+          <div class="card rounded-2xl p-6 md:p-8">
+            <!-- RAW state -->
+            <div class="state" data-deal-state="raw">
+              <div class="flex items-center justify-between mb-5">
+                <div class="text-bone/60 text-sm">Deal IDs across SSP A &amp; SSP B</div>
+                <div class="mono text-sm warn-fill" style="color:#E8845B">× thousands</div>
+              </div>
+              <div class="space-y-3">
+                <div class="rounded-lg p-3 flex flex-wrap items-center gap-2" style="border:1px solid rgba(237,238,240,0.08);">
+                  <span class="mono text-xs text-bone/45">SSP A</span>
+                  <span class="mono text-xs px-2 py-1 rounded" style="background:rgba(232,132,91,0.08);">PUBDEAL-A · 4471 · "Sprts-LIVE" · Pub554</span>
+                  <span class="mono text-xs px-2 py-1 rounded" style="background:rgba(232,132,91,0.08);">PUBDEAL-A · 4472 · "live_sport_hd" · Pub664</span>
+                </div>
+                <div class="rounded-lg p-3 flex flex-wrap items-center gap-2" style="border:1px solid rgba(237,238,240,0.08);">
+                  <span class="mono text-xs text-bone/45">SSP B</span>
+                  <span class="mono text-xs px-2 py-1 rounded" style="background:rgba(232,132,91,0.08);">DEAL_B · 90233 · "VOD-SPORT" · Pub554</span>
+                  <span class="mono text-xs px-2 py-1 rounded" style="background:rgba(232,132,91,0.08);">DEAL_B · 90234 · "vodSportsP1" · Pub664</span>
+                </div>
+                <div class="rounded-lg p-3 flex flex-wrap items-center gap-2 opacity-60" style="border:1px solid rgba(237,238,240,0.08);">
+                  <span class="mono text-xs text-bone/45">SSP A</span>
+                  <span class="mono text-xs px-2 py-1 rounded" style="background:rgba(232,132,91,0.08);">PUBDEAL-A · 4473 · "sports?" · Pub901</span>
+                  <span class="mono text-xs px-2 py-1 rounded" style="background:rgba(232,132,91,0.08);">… 2,140 more</span>
+                </div>
+              </div>
+              <div class="mt-5 flex flex-wrap gap-2">
+                <span class="mono text-[11px] px-2 py-1 rounded text-bone/55" style="border:1px solid rgba(232,132,91,0.3);">taxonomy ✕</span>
+                <span class="mono text-[11px] px-2 py-1 rounded text-bone/55" style="border:1px solid rgba(232,132,91,0.3);">name ✕</span>
+                <span class="mono text-[11px] px-2 py-1 rounded text-bone/55" style="border:1px solid rgba(232,132,91,0.3);">format ✕</span>
+                <span class="mono text-[11px] px-2 py-1 rounded text-bone/55" style="border:1px solid rgba(232,132,91,0.3);">quality ✕</span>
+              </div>
+            </div>
+
+            <!-- MCG state -->
+            <div class="state hidden" data-deal-state="mcg">
+              <div class="flex items-center justify-between mb-5">
+                <div class="text-bone/60 text-sm">Normalized to one taxonomy, mapped to intent</div>
+                <div class="mono text-sm" style="color:#53BDBF">✓ resolved</div>
+              </div>
+              <div class="space-y-3">
+                <div class="rounded-lg p-4" style="border:1px solid rgba(83,189,191,0.4); background:rgba(83,189,191,0.05);">
+                  <div class="flex items-center justify-between">
+                    <div class="text-bone font-medium">Live Sports · Premium</div>
+                    <div class="mono text-xs" style="color:#53BDBF">4 deals · 2 SSPs</div>
+                  </div>
+                  <div class="mono text-[11px] text-bone/45 mt-2">Pub554, Pub664 · video · HD · ATF — buy as one line</div>
+                </div>
+                <div class="rounded-lg p-4" style="border:1px solid rgba(83,189,191,0.4); background:rgba(83,189,191,0.05);">
+                  <div class="flex items-center justify-between">
+                    <div class="text-bone font-medium">VOD Sports · Standard</div>
+                    <div class="mono text-xs" style="color:#53BDBF">2 deals · 2 SSPs</div>
+                  </div>
+                  <div class="mono text-[11px] text-bone/45 mt-2">Pub554, Pub664 · instream · SD — buy as one line</div>
+                </div>
+              </div>
+              <div class="mt-5 flex flex-wrap gap-2">
+                <span class="mono text-[11px] px-2 py-1 rounded" style="border:1px solid rgba(83,189,191,0.4); color:#7FD2D4;">taxonomy ✓</span>
+                <span class="mono text-[11px] px-2 py-1 rounded" style="border:1px solid rgba(83,189,191,0.4); color:#7FD2D4;">name ✓</span>
+                <span class="mono text-[11px] px-2 py-1 rounded" style="border:1px solid rgba(83,189,191,0.4); color:#7FD2D4;">format ✓</span>
+                <span class="mono text-[11px] px-2 py-1 rounded" style="border:1px solid rgba(83,189,191,0.4); color:#7FD2D4;">quality ✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ==================== ISSUE 3 — COMMUNICATION ==================== -->
+  <section id="issue-3" class="relative section-rule reveal">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 py-20 md:py-28">
+      <div class="grid md:grid-cols-12 gap-10 items-start">
+        <div class="md:col-span-5">
+          <div class="display text-6xl text-accent">03</div>
+          <span class="eyebrow block mt-4">Communication</span>
+          <h2 class="display text-4xl md:text-5xl text-bone mt-3">
+            Twenty SSPs, or <span class="serif-italic text-accent">one contact.</span>
+          </h2>
+          <p class="mt-6 text-bone/70 leading-relaxed">
+            Running supply yourself means chasing roughly twenty SSPs — separate deals, separate
+            terms, separate people, separate fires. MCG is a single point of contact for all of
+            it. You talk to us; we manage the supply.
+          </p>
+          <div class="mt-8 toggle" data-toggle="comm">
+            <button class="on problem" data-state="raw">Direct to 20 SSPs</button>
+            <button data-state="mcg">Through MCG</button>
+          </div>
+        </div>
+
+        <div class="md:col-span-7 stage" data-stage="comm">
+          <div class="card rounded-2xl p-4 md:p-6">
+            <svg viewBox="0 0 600 420" class="w-full" data-comm-svg role="img" aria-label="You connecting to twenty SSPs directly, versus you connecting through a single MCG node.">
+              <!-- YOU node -->
+              <rect class="node-rect" x="30" y="180" width="120" height="60" rx="10"/>
+              <text class="node-label" x="90" y="207" text-anchor="middle" font-size="15">You</text>
+              <text class="node-sub" x="90" y="225" text-anchor="middle" font-size="10">the buyer</text>
+
+              <!-- MCG node (revealed in mcg state) -->
+              <g data-comm-mcg opacity="0">
+                <rect x="250" y="175" width="110" height="70" rx="12"
+                      fill="rgba(83,189,191,0.08)" stroke="#53BDBF"/>
+                <text class="accent-fill" x="305" y="205" text-anchor="middle" font-size="15">MCG</text>
+                <text x="305" y="223" text-anchor="middle" font-size="9" fill="#7FD2D4">one contact</text>
+              </g>
+
+              <!-- lines + SSP dots generated by JS -->
+              <g data-comm-lines></g>
+              <g data-comm-dots></g>
+            </svg>
+            <div class="text-center mono text-sm mt-2" data-comm-count style="color:#E8845B">20 relationships to manage</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ==================== ISSUE 4 — BIAS ==================== -->
+  <section id="issue-4" class="relative section-rule reveal">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 py-20 md:py-28">
+      <div class="grid md:grid-cols-12 gap-10 items-start">
+        <div class="md:col-span-5">
+          <div class="display text-6xl text-accent">04</div>
+          <span class="eyebrow block mt-4">Bias &amp; inventory shaping</span>
+          <h2 class="display text-4xl md:text-5xl text-bone mt-3">
+            SSPs play <span class="serif-italic text-accent">favorites.</span>
+          </h2>
+          <p class="mt-6 text-bone/70 leading-relaxed">
+            SSPs prioritize one DSP over another. Priority-1 demand can see
+            <span class="text-bone font-medium">2B requests</span> while priority-2 demand sees
+            only <span class="text-bone font-medium">750M</span> of the same supply. If your DSP
+            is on the wrong side of that, you simply never see the inventory.
+          </p>
+          <p class="mt-4 text-bone/70 leading-relaxed">
+            Because MCG recognizes the bias, we can shape inventory — push more volume to where
+            you need it and surface supply you weren't being shown.
+          </p>
+          <div class="mt-8 toggle" data-toggle="bias">
+            <button class="on problem" data-state="raw">SSP bias</button>
+            <button data-state="mcg">MCG reshapes</button>
+          </div>
+        </div>
+
+        <div class="md:col-span-7 stage" data-stage="bias">
+          <div class="card rounded-2xl p-6 md:p-8">
+            <div class="text-bone/60 text-sm mb-6">Bid requests routed to each DSP from a shared SSP</div>
+
+            <div class="space-y-7">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="text-bone">DSP A <span class="mono text-xs text-bone/45" data-bias-prio-a>· priority 1</span></div>
+                  <div class="mono text-sm text-bone/70" data-bias-val-a>2.0B requests</div>
+                </div>
+                <div class="h-7 rounded-full overflow-hidden" style="background:rgba(237,238,240,0.05);">
+                  <div class="bias-bar h-full rounded-full" data-bias-bar-a style="width:88%; background:#E8845B;"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="text-bone">DSP B <span class="mono text-xs text-bone/45" data-bias-prio-b>· priority 2 — that's you</span></div>
+                  <div class="mono text-sm text-bone/70" data-bias-val-b>750M requests</div>
+                </div>
+                <div class="h-7 rounded-full overflow-hidden" style="background:rgba(237,238,240,0.05);">
+                  <div class="bias-bar h-full rounded-full" data-bias-bar-b style="width:33%; background:rgba(237,238,240,0.25);"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-7 rounded-lg p-4 hidden" data-bias-note style="border:1px solid rgba(83,189,191,0.4); background:rgba(83,189,191,0.05);">
+              <div class="mono text-xs" style="color:#53BDBF">+ NEW INVENTORY DISCOVERED</div>
+              <div class="text-bone/70 text-sm mt-1">MCG rebalances volume toward your DSP and surfaces supply the bias was hiding from you.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ==================== ISSUE 5 — PRICE OPTIMIZATION ==================== -->
+  <section id="issue-5" class="relative section-rule reveal">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 py-20 md:py-28">
+      <div class="grid md:grid-cols-12 gap-10 items-start">
+        <div class="md:col-span-5">
+          <div class="display text-6xl text-accent">05</div>
+          <span class="eyebrow block mt-4">Price optimization</span>
+          <h2 class="display text-4xl md:text-5xl text-bone mt-3">
+            Same publisher. <span class="serif-italic text-accent">Cheapest route.</span>
+          </h2>
+          <p class="mt-6 text-bone/70 leading-relaxed">
+            A large publisher works with more than one SSP, and the same impression is offered at
+            different floors and revenue shares depending on the path. With visibility into each
+            SSP's economics, MCG finds the lowest-floor, best-rev-share route to the inventory you
+            want — and buys through it.
+          </p>
+          <p class="mt-4 text-bone/70 leading-relaxed">
+            <span class="mono text-sm" style="color:#7FD2D4;">Click a publisher</span> to see MCG
+            light up the optimal route.
+          </p>
+        </div>
+
+        <div class="md:col-span-7 stage" data-stage="price">
+          <div class="card rounded-2xl p-4 md:p-6">
+            <svg viewBox="0 0 640 420" class="w-full" role="img" aria-label="DSPs route through SSPs to publishers; the cheapest path lights up when a publisher is selected.">
+              <!-- column labels -->
+              <text class="node-sub" x="70"  y="28" text-anchor="middle" font-size="11" letter-spacing="2">DSP</text>
+              <text class="node-sub" x="320" y="28" text-anchor="middle" font-size="11" letter-spacing="2">SSP</text>
+              <text class="node-sub" x="560" y="28" text-anchor="middle" font-size="11" letter-spacing="2">PUBLISHER</text>
+
+              <!-- routes (drawn first, behind nodes) -->
+              <g data-price-routes></g>
+
+              <!-- DSP nodes -->
+              <g>
+                <rect class="node-rect" x="20" y="90"  width="100" height="44" rx="9"/><text class="node-label" x="70" y="117" text-anchor="middle" font-size="13">DSP 1</text>
+                <rect class="node-rect" x="20" y="188" width="100" height="44" rx="9"/><text class="node-label" x="70" y="215" text-anchor="middle" font-size="13">DSP 2</text>
+                <rect class="node-rect" x="20" y="286" width="100" height="44" rx="9"/><text class="node-label" x="70" y="313" text-anchor="middle" font-size="13">DSP 3</text>
+              </g>
+              <!-- SSP nodes -->
+              <g>
+                <rect class="node-rect" x="270" y="90"  width="100" height="44" rx="9"/><text class="node-label" x="320" y="117" text-anchor="middle" font-size="13">SSP 1</text>
+                <rect class="node-rect" x="270" y="188" width="100" height="44" rx="9"/><text class="node-label" x="320" y="215" text-anchor="middle" font-size="13">SSP 2</text>
+                <rect class="node-rect" x="270" y="286" width="100" height="44" rx="9"/><text class="node-label" x="320" y="313" text-anchor="middle" font-size="13">SSP 3</text>
+              </g>
+              <!-- Publisher nodes (clickable) -->
+              <g class="pub-hit" data-pub="446">
+                <rect class="node-rect" x="500" y="120" width="120" height="56" rx="10" data-pub-rect="446"/>
+                <text class="node-label" x="560" y="146" text-anchor="middle" font-size="14">Pub 446</text>
+                <text class="node-sub" x="560" y="164" text-anchor="middle" font-size="10">tap to route</text>
+              </g>
+              <g class="pub-hit" data-pub="557">
+                <rect class="node-rect" x="500" y="244" width="120" height="56" rx="10" data-pub-rect="557"/>
+                <text class="node-label" x="560" y="270" text-anchor="middle" font-size="14">Pub 557</text>
+                <text class="node-sub" x="560" y="288" text-anchor="middle" font-size="10">tap to route</text>
+              </g>
+            </svg>
+
+            <div class="mt-2 rounded-lg p-4 flex items-center justify-between" data-price-readout style="border:1px solid rgba(237,238,240,0.08);">
+              <div class="text-bone/55 text-sm">Select a publisher to compare routes</div>
+              <div class="mono text-xs text-bone/40">rev share · floor price</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================ CLOSING ============================ -->
+  <section class="relative section-rule overflow-hidden grain">
+    <div class="aurora"></div>
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-10 py-24 md:py-32 text-center">
+      <span class="eyebrow">Upstream supply management</span>
+      <h2 class="display text-5xl md:text-7xl text-bone mt-5">
+        Plan. <span class="serif-italic text-accent">Bid.</span> Win.
+      </h2>
+      <p class="mt-7 max-w-2xl mx-auto text-bone/70 text-lg leading-relaxed">
+        One layer that de-duplicates the bidstream, maps every deal to your intent, manages the
+        supply for you, and routes each dollar to the source on the best terms. Neutral,
+        high-fidelity, zero integration.
+      </p>
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+        <a href="https://www.wermcg.com" target="_top" class="btn-primary inline-flex items-center gap-2 px-7 py-4 font-medium rounded-full">
+          Talk to MCG
+          <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6H10M10 6L6 2M10 6L6 10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  var root = document.querySelector('.mcg-sx');
+  if(!root) return;
+
+  /* ---------- smooth scroll (Framer iframe-safe) ---------- */
+  root.querySelectorAll('[data-scroll]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      var t = root.querySelector(a.getAttribute('href'));
+      if(!t) return;
+      try {
+        var ifr = window.frameElement;
+        if(ifr && window.parent !== window){
+          var top = window.parent.pageYOffset + ifr.getBoundingClientRect().top + t.getBoundingClientRect().top - 80;
+          window.parent.scrollTo({top:top, behavior:'smooth'});
+        } else { t.scrollIntoView({behavior:'smooth', block:'start'}); }
+      } catch(err){ t.scrollIntoView({behavior:'smooth', block:'start'}); }
+    });
+  });
+
+  /* ---------- in-view reveal ---------- */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target);} });
+    }, {threshold:0.12});
+    root.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  } else {
+    root.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---------- generic toggle wiring ---------- */
+  function wireToggle(name, onChange){
+    var grp = root.querySelector('[data-toggle="'+name+'"]');
+    if(!grp) return;
+    grp.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        grp.querySelectorAll('button').forEach(function(b){ b.classList.remove('on','problem'); });
+        btn.classList.add('on');
+        if(btn.dataset.state === 'raw') btn.classList.add('problem');
+        onChange(btn.dataset.state);
+      });
+    });
+  }
+
+  /* ---------- 1. bid duplication ---------- */
+  wireToggle('dup', function(state){
+    var grid = root.querySelector('[data-dup-grid]');
+    var resolved = root.querySelector('[data-dup-resolved]');
+    var count = root.querySelector('[data-dup-count]');
+    if(state === 'mcg'){
+      grid.style.display = 'none';
+      resolved.classList.remove('hidden');
+      count.textContent = '×4 → ×1';
+      count.style.color = '#53BDBF';
+    } else {
+      grid.style.display = '';
+      resolved.classList.add('hidden');
+      count.textContent = '×4 duplication';
+      count.style.color = '';
+    }
+  });
+
+  /* ---------- 2. deal mapping ---------- */
+  wireToggle('deal', function(state){
+    root.querySelector('[data-deal-state="raw"]').classList.toggle('hidden', state==='mcg');
+    root.querySelector('[data-deal-state="mcg"]').classList.toggle('hidden', state!=='mcg');
+  });
+
+  /* ---------- 3. communication node web ---------- */
+  (function(){
+    var linesG = root.querySelector('[data-comm-lines]');
+    var dotsG  = root.querySelector('[data-comm-dots]');
+    var mcg    = root.querySelector('[data-comm-mcg]');
+    var count  = root.querySelector('[data-comm-count]');
+    if(!linesG) return;
+    var N = 20, cx = 530, top = 30, bottom = 390, you = {x:150,y:210}, hub = {x:305,y:210};
+    var lines = [], dots = [];
+    for(var i=0;i<N;i++){
+      var y = top + (bottom-top) * (i/(N-1));
+      var ln = document.createElementNS('http://www.w3.org/2000/svg','path');
+      ln.setAttribute('class','ssp-line wire-warn');
+      ln.setAttribute('stroke-width','1');
+      ln.setAttribute('d', 'M'+you.x+','+you.y+' C 300,'+you.y+' 380,'+y+' '+cx+','+y);
+      linesG.appendChild(ln); lines.push({el:ln, y:y});
+
+      var dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('class','ssp-dot'); dot.setAttribute('cx',cx); dot.setAttribute('cy',y);
+      dot.setAttribute('r','5'); dot.setAttribute('fill','rgba(237,238,240,0.35)');
+      dotsG.appendChild(dot); dots.push(dot);
+    }
+    // hub feeder lines (you->MCG, MCG->each SSP) used in mcg state
+    var hubFeed = document.createElementNS('http://www.w3.org/2000/svg','path');
+    hubFeed.setAttribute('class','ssp-line wire-good'); hubFeed.setAttribute('stroke-width','2');
+    hubFeed.setAttribute('d','M'+you.x+','+you.y+' L'+hub.x+','+hub.y);
+    hubFeed.setAttribute('opacity','0'); linesG.appendChild(hubFeed);
+
+    wireToggle('comm', function(state){
+      if(state==='mcg'){
+        mcg.setAttribute('opacity','1');
+        hubFeed.setAttribute('opacity','1');
+        lines.forEach(function(o){
+          // reroute each line to start at the hub
+          o.el.setAttribute('d','M'+hub.x+','+hub.y+' C 400,'+hub.y+' 440,'+o.y+' '+cx+','+o.y);
+          o.el.setAttribute('class','ssp-line wire-good'); o.el.setAttribute('stroke-width','1');
+        });
+        dots.forEach(function(d){ d.setAttribute('fill','#53BDBF'); });
+        count.textContent = '1 relationship — MCG manages the rest';
+        count.style.color = '#53BDBF';
+      } else {
+        mcg.setAttribute('opacity','0');
+        hubFeed.setAttribute('opacity','0');
+        lines.forEach(function(o){
+          o.el.setAttribute('d','M'+you.x+','+you.y+' C 300,'+you.y+' 380,'+o.y+' '+cx+','+o.y);
+          o.el.setAttribute('class','ssp-line wire-warn'); o.el.setAttribute('stroke-width','1');
+        });
+        dots.forEach(function(d){ d.setAttribute('fill','rgba(237,238,240,0.35)'); });
+        count.textContent = '20 relationships to manage';
+        count.style.color = '#E8845B';
+      }
+    });
+  })();
+
+  /* ---------- 4. bias ---------- */
+  wireToggle('bias', function(state){
+    var barA = root.querySelector('[data-bias-bar-a]'), barB = root.querySelector('[data-bias-bar-b]');
+    var valA = root.querySelector('[data-bias-val-a]'), valB = root.querySelector('[data-bias-val-b]');
+    var prioB = root.querySelector('[data-bias-prio-b]'), note = root.querySelector('[data-bias-note]');
+    if(state==='mcg'){
+      barA.style.width='62%'; barA.style.background='rgba(237,238,240,0.25)';
+      barB.style.width='70%'; barB.style.background='#53BDBF';
+      valA.textContent='1.6B requests'; valB.textContent='1.9B requests';
+      prioB.textContent='· reshaped by MCG';
+      note.classList.remove('hidden');
+    } else {
+      barA.style.width='88%'; barA.style.background='#E8845B';
+      barB.style.width='33%'; barB.style.background='rgba(237,238,240,0.25)';
+      valA.textContent='2.0B requests'; valB.textContent='750M requests';
+      prioB.textContent='· priority 2 — that’s you';
+      note.classList.add('hidden');
+    }
+  });
+
+  /* ---------- 5. price optimization routes ---------- */
+  (function(){
+    var g = root.querySelector('[data-price-routes]');
+    var readout = root.querySelector('[data-price-readout]');
+    if(!g) return;
+    var DSP = {1:{x:120,y:112}, 2:{x:120,y:210}, 3:{x:120,y:308}};
+    var SSP = {1:{x:270,y:112}, 2:{x:270,y:210}, 3:{x:270,y:308}};
+    var SSPout = {1:{x:370,y:112}, 2:{x:370,y:210}, 3:{x:370,y:308}};
+    var PUB = {'446':{x:500,y:148}, '557':{x:500,y:272}};
+
+    // dsp->ssp mesh (the crossing tangle) + ssp->pub legs with economics
+    var dspSsp = [[1,1],[1,2],[2,1],[2,3],[3,2],[3,3],[1,3],[3,1]];
+    // each ssp->pub leg: {ssp, pub, floor, rev}  (floor in CPM, rev=MCG-visible rev share to pub)
+    var legs = [
+      {ssp:1, pub:'446', floor:6.80, rev:'72%'},
+      {ssp:2, pub:'446', floor:5.10, rev:'80%'},   // best for 446
+      {ssp:3, pub:'446', floor:7.20, rev:'68%'},
+      {ssp:1, pub:'557', floor:9.40, rev:'70%'},
+      {ssp:2, pub:'557', floor:8.85, rev:'74%'},
+      {ssp:3, pub:'557', floor:7.95, rev:'82%'}    // best for 557
+    ];
+    var best = {'446':{ssp:2, floor:5.10, rev:'80%'}, '557':{ssp:3, floor:7.95, rev:'82%'}};
+
+    var dspSspEls = [], legEls = [];
+    function path(a,b){ var mx=(a.x+b.x)/2; return 'M'+a.x+','+a.y+' C '+mx+','+a.y+' '+mx+','+b.y+' '+b.x+','+b.y; }
+
+    dspSsp.forEach(function(p){
+      var el = document.createElementNS('http://www.w3.org/2000/svg','path');
+      el.setAttribute('class','route wire'); el.setAttribute('stroke-width','1.25');
+      el.setAttribute('d', path(DSP[p[0]], SSP[p[1]]));
+      g.appendChild(el); dspSspEls.push({el:el, ssp:p[1]});
+    });
+    legs.forEach(function(l){
+      var el = document.createElementNS('http://www.w3.org/2000/svg','path');
+      el.setAttribute('class','route wire'); el.setAttribute('stroke-width','1.5');
+      el.setAttribute('d', path(SSPout[l.ssp], PUB[l.pub]));
+      g.appendChild(el); legEls.push({el:el, leg:l});
+    });
+
+    function reset(){
+      dspSspEls.forEach(function(o){ o.el.setAttribute('class','route wire'); o.el.setAttribute('stroke-width','1.25'); o.el.setAttribute('opacity','1'); });
+      legEls.forEach(function(o){ o.el.setAttribute('class','route wire'); o.el.setAttribute('stroke-width','1.5'); o.el.setAttribute('opacity','1'); });
+      ['446','557'].forEach(function(p){ root.querySelector('[data-pub-rect="'+p+'"]').setAttribute('stroke','rgba(237,238,240,0.18)'); });
+    }
+
+    function select(pub){
+      reset();
+      var b = best[pub];
+      // dim everything, then light the optimal route
+      dspSspEls.forEach(function(o){ o.el.setAttribute('opacity', o.ssp===b.ssp ? '1' : '0.12');
+        if(o.ssp===b.ssp){ o.el.setAttribute('class','route wire-good flowing'); o.el.setAttribute('stroke-width','2'); } });
+      legEls.forEach(function(o){
+        var isBest = (o.leg.pub===pub && o.leg.ssp===b.ssp);
+        if(o.leg.pub!==pub){ o.el.setAttribute('opacity','0.1'); }
+        else if(isBest){ o.el.setAttribute('class','route wire-good flowing'); o.el.setAttribute('stroke-width','2.5'); }
+        else { o.el.setAttribute('class','route wire-warn'); o.el.setAttribute('opacity','0.35'); o.el.setAttribute('stroke-width','1.25'); }
+      });
+      root.querySelector('[data-pub-rect="'+pub+'"]').setAttribute('stroke','#53BDBF');
+      readout.innerHTML =
+        '<div><span class="mono text-xs" style="color:#53BDBF">OPTIMAL ROUTE → Pub '+pub+'</span>'+
+        '<div class="text-bone/70 text-sm mt-1">via SSP '+b.ssp+' — lowest floor, best rev share</div></div>'+
+        '<div class="mono text-right"><div class="text-bone text-lg">$'+b.floor.toFixed(2)+'</div>'+
+        '<div class="text-[10px] text-bone/45">floor · '+b.rev+' to pub</div></div>';
+      readout.style.borderColor = 'rgba(83,189,191,0.4)';
+      readout.style.background = 'rgba(83,189,191,0.05)';
+    }
+
+    root.querySelectorAll('.pub-hit').forEach(function(el){
+      el.addEventListener('click', function(){ select(el.dataset.pub); });
+    });
+  })();
+
+})();
+</script>
