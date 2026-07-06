@@ -154,6 +154,14 @@
   .term .brand { color: var(--term-green); font-weight: 600; }
   .term .dim { color: var(--term-dim); }
 
+  .tweet { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 12px 0; max-width: 640px; }
+  .tweet .thead { display: flex; align-items: baseline; gap: 8px; font-size: .82rem; margin-bottom: 6px; flex-wrap: wrap; }
+  .tweet .thead b { color: var(--ink); }
+  .tweet .thead span { color: var(--ink-3); }
+  .tweet .tbody { font-size: .92rem; color: var(--ink); margin: 0; }
+  .tweet .tstats { font-size: .76rem; color: var(--ink-3); margin-top: 8px; }
+  .tweet .tnote { font-size: .78rem; color: var(--warn); margin-top: 6px; }
+
   .qa { border-left: 3px solid var(--accent); padding: 2px 0 2px 18px; margin: 22px 0; }
   .qa h3 { margin: 0 0 6px; }
   .qa p { margin: 6px 0; }
@@ -167,7 +175,7 @@
 </style>
 
 <main>
-  <p class="kicker" style="margin-top:56px">Sponsored Code · Demand-Side Research · v2</p>
+  <p class="kicker" style="margin-top:56px">Sponsored Code · Demand-Side Research · v3</p>
   <h1>Who actually pays for ads in the terminal?</h1>
   <p class="sub">The advertiser bank, the money flow, pricing, targeting and geo — evidence-first, to feed the monetization GTM.</p>
   <p class="meta">July 6, 2026 · Sources: live network sites &amp; APIs (fetched today), two independent teardowns, HN/Product Hunt, funding press. Claims flagged <span class="chip v">verified</span> <span class="chip s">single-source</span> <span class="chip c">claimed</span></p>
@@ -443,6 +451,41 @@
   </div>
 
   <p class="kicker">Part 7</p>
+  <h2>The X/Twitter layer — pulled first-hand</h2>
+  <p>Tweets below were retrieved directly from X's syndication API (not via secondary write-ups). Four things X establishes that the websites don't:</p>
+
+  <h3>1 · The entire demand motion was one tweet</h3>
+  <div class="tweet">
+    <div class="thead"><b>Andrew McCalip</b><span>@andrewmccalip · Jun 11, 2026 · verified</span></div>
+    <p class="tbody">"Get paid to wait. The Claude Code spinner might be the most watched line on Earth. So I turned it into an ad marketplace. Advertisers bid on it. You keep 50% of the money. Install the extension → get cash from ads. Introducing Kickbacks"</p>
+    <div class="tstats">13,316 likes · 1,145 replies · 507 RTs · video demo · <a href="https://x.com/andrewmccalip/status/2065049432652189933">source</a> — followed same-day by <a href="https://x.com/andrewmccalip/status/2065111960082112765">"uhhh, guys"</a> (5,415 likes) with a traction screenshot</div>
+  </div>
+  <p>This is what "advertiser acquisition" looked like: every verified brand (Ramp, Sentry, Context.dev, Feast) bought within the blast radius of this one post. No competitor ever produced an equivalent moment — and WaitSpin and ClaudeCodeAds have <strong>no X presence at all</strong>, i.e. no channel to reach demand whatsoever.</p>
+
+  <h3>2 · The fraud problem was public within hours</h3>
+  <div class="tweet">
+    <div class="thead"><b>Elie Steinbock</b><span>@elie2222 · Jun 11, 2026 · verified (Inbox Zero founder)</span></div>
+    <p class="tbody">Posted a "growth hack to earn $200 per day": open multiple Claude Code tabs on the cheapest model (Haiku), run a counting loop, and let the Kickbacks extension farm ad impressions. "My friend already earned $13.59."</p>
+    <div class="tstats">319 likes · 30 replies · screenshot attached · <a href="https://x.com/elie2222/status/2065214747596005761">source</a></div>
+    <div class="tnote">A verified founder publishing an impression-farming recipe on launch day — this is what advertisers' CPM dollars were buying. It's the strongest single argument for server-side counting as the product wedge.</div>
+  </div>
+
+  <h3>3 · The market called the demand problem in 24 hours</h3>
+  <div class="tweet">
+    <div class="thead"><b>ArkDev | HYTOPIA</b><span>@iamarkdev · Jun 12, 2026</span></div>
+    <p class="tbody">"Kickbacks' flaw isn't going to be Anthropic or OpenAI killing it — it's the market. Supply scales with every install, but ad demand for this format doesn't, so CPM death spirals as the thing grows. Honest-dev inventory churns and growth stalls…" — citing AllAdvantage ($100M+ paid to members, dead by 2001) as the precedent.</p>
+    <div class="tstats"><a href="https://x.com/iamarkdev/status/2065485683465306224">source</a> · low engagement, but it predicted exactly what the July 6 data shows</div>
+  </div>
+
+  <h3>4 · What X does NOT contain (checked, absent)</h3>
+  <ul>
+    <li><strong>Zero advertiser-side confirmations.</strong> Neither @tryramp, Sentry, nor @getcontextdev ever tweeted about buying spinner ads. No brand has publicly claimed this channel — no case-study thread, no "we sponsored the spinner" post. All advertiser evidence is supply-side or third-party observation.</li>
+    <li><strong>Zero payout-proof screenshots.</strong> Searches for cashed-out Stripe payouts across X and Reddit return nothing — consistent with the teardown's note that our first-hand payout is the only verified one.</li>
+    <li><strong>Founder reality check:</strong> Idlen is @paulefizelier, a solo builder ("building @idlenai to subsidize AI tokens by watching privacy-first, developer-targeted ads in IDEs") — the "50,000+ creators" claim is one person's landing page. The @AiCash_Official handle on X is an unrelated Solana token; the terminal aicash has no visible X account.</li>
+    <li><strong>Adjacent-category signal:</strong> ZeroClick's founder Ryan Hudson (<a href="https://x.com/ketau/status/1957562011916857704">@ketau launch</a>) announced the <a href="https://x.com/ketau/status/1962978812515508643">Sleek acquisition</a> ("turn browser developers into AI developers"), and investor chatter reports preemptive ~$100M Series B offers <span class="chip c">rumor</span> — demand-side capital keeps concentrating one level up, not in the terminal networks.</li>
+  </ul>
+
+  <p class="kicker">Part 8</p>
   <h2>Your original questions, answered straight</h2>
 
   <div class="qa">
@@ -475,7 +518,7 @@
     <p>Not sold — <strong>harvested from a viral moment.</strong> Kickbacks' entire demand motion was Andrew McCalip's June 11 launch tweet (5.5M views) plus a $0.50-minimum self-serve form. Context.dev is a YC S26 company reaching the YC/dev crowd — network-proximity buying, not pipeline. No coding-agent network has a sales team, an agency relationship, or a pricing page aimed at a media buyer. Nobody in this category has ever actually <em>sold</em> this inventory. <span class="chip v">verified</span></p>
   </div>
 
-  <p class="kicker">Part 8</p>
+  <p class="kicker">Part 9</p>
   <h2>The creatives, as they actually ran</h2>
   <p>One-line text ads in the Claude Code spinner/status line — rendered verbatim from primary sources. On the Kickbacks "Extension" surface the line is a clickable hyperlink; in the Terminal CLI it's ambient (cmd+click opens the browser).</p>
 
@@ -505,7 +548,7 @@
   </div>
   <p class="src">Source: aicash.fun. Note the copycat naming ("ADSentry" ≠ Sentry). aicash holds no demand relationships itself — it calls Gravity's contextual ad endpoint per session.</p>
 
-  <p class="kicker">Part 9</p>
+  <p class="kicker">Part 10</p>
   <h2>Market map: three demand models, one empty room</h2>
   <div class="tablewrap"><table>
     <tr><th>Demand model</th><th>Who</th><th>How it works</th><th>Real advertisers today</th></tr>
@@ -529,7 +572,7 @@
     </tr>
   </table></div>
 
-  <p class="kicker">Part 10</p>
+  <p class="kicker">Part 11</p>
   <h2>The adjacent demand pools (where the money already is)</h2>
   <div class="tablewrap"><table>
     <tr><th>Player</th><th>Funding</th><th>Model</th><th>Named demand</th><th>Relevance to us</th></tr>
@@ -563,7 +606,7 @@
     </tr>
   </table></div>
 
-  <p class="kicker">Part 11</p>
+  <p class="kicker">Part 12</p>
   <h2>What this means for the GTM</h2>
   <ul>
     <li><strong>Kill the "undercut on CPM" opener.</strong> At a $1 observed floor there is no price to beat and no incumbent spend to steal. Price is not the problem — <em>proof</em> is. Every documented failure is measurement-shaped: client-side counting, a $400/day bot, empty auction, throttled payouts.</li>
@@ -582,6 +625,7 @@
       <li><strong>Advertiser identities:</strong> <a href="https://citedy.com">citedy.com</a> · <a href="https://lnkgo.app">lnkgo.app</a> · <a href="https://adclaw.app">adclaw.app</a> + <a href="https://github.com/Citedy/adclaw">github.com/Citedy/adclaw</a> (common ownership) · <a href="https://context.dev">context.dev</a> (YC S26) · <a href="https://ramp.com">ramp.com</a> · <a href="https://sentry.io">sentry.io</a></li>
       <li><strong>Independent teardowns:</strong> <a href="https://southsidechisolutions.com/blog/kickbacks-ai-is-adware-with-a-payout-page/">Southside CHI Solutions</a> (4-day Wireshark test: advertiser roster, $1.09 floor) · <a href="https://go-to-agency.com/en/blog/kickbacks-ai-ads-claude-code-spinner">Go To Agency</a> (Firecrawl = house placeholder, order-book mechanics)</li>
       <li><strong>Community:</strong> <a href="https://news.ycombinator.com/item?id=48493940">HN launch thread</a> (407 imps → $4.43, the "$11 CPM" origin) · <a href="https://github.com/OthmanAdi/kickbacks-kit">kickbacks-kit</a> (ad archive format, Ramp creative)</li>
+      <li><strong>X / Twitter (first-hand via syndication API):</strong> <a href="https://x.com/andrewmccalip/status/2065049432652189933">Kickbacks launch tweet</a> (13.3K likes, verbatim) · <a href="https://x.com/andrewmccalip/status/2065111960082112765">"uhhh, guys" traction post</a> · <a href="https://x.com/elie2222/status/2065214747596005761">@elie2222 impression-farming recipe</a> · <a href="https://x.com/iamarkdev/status/2065485683465306224">@iamarkdev CPM death-spiral thread</a> · <a href="https://x.com/paulefizelier">@paulefizelier</a> (Idlen solo founder) · <a href="https://x.com/ketau/status/1957562011916857704">ZeroClick launch</a> + <a href="https://x.com/ketau/status/1962978812515508643">Sleek acquisition</a>. Checked and absent: advertiser-side confirmations from @tryramp/Sentry/@getcontextdev; payout-proof screenshots on X/Reddit; any X presence for WaitSpin or ClaudeCodeAds.</li>
       <li><strong>Adjacent category:</strong> <a href="https://techcrunch.com/2025/09/07/koah-raises-5m-to-bring-ads-into-ai-apps/">TechCrunch on Koah</a> · <a href="https://www.adweek.com/media/koah-adsense-for-chatgpt-series-a/">Adweek (Series A)</a> · <a href="https://labusinessjournal.com/technology/zeroclick-blends-advertising-ai/">LA Business Journal on ZeroClick</a> · <a href="https://www.trygravity.ai/">trygravity.ai</a> + <a href="https://docs.trygravity.ai/">docs</a> ($75M seed valuation via Analytics Insight/PitchBook) · <a href="https://www.getchatads.com/blog/top-eleven-ad-networks-for-ai/">ChatAds network roundup</a></li>
       <li><strong>Biased (flagged):</strong> <a href="https://dev.to/digitalcheff/i-compared-every-ai-wait-state-ad-platform-kickbacks-idleads-idlen-more-3m4a">dev.to CPM comparison</a> — author sells a $19 setup guide; source of the amber "claimed" bars.</li>
     </ul>
