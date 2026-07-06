@@ -1,0 +1,590 @@
+<title>Terminal Ads — Demand-Side Research</title>
+<style>
+  :root {
+    --paper: #f6f7f6;
+    --card: #ffffff;
+    --ink: #1c211e;
+    --ink-2: #4c554f;
+    --ink-3: #79837c;
+    --line: #dde3df;
+    --accent: #1f7a4d;
+    --accent-soft: #e7f2ec;
+    --good: #1f7a4d;
+    --warn: #9a6b1f;
+    --warn-soft: #f5ecd9;
+    --bad: #a03d2e;
+    --bad-soft: #f6e6e2;
+    --bar-obs: #1f7a4d;
+    --bar-clm: #b07a2a;
+    --term-bg: #15181a;
+    --term-ink: #c8d2cb;
+    --term-dim: #6b7770;
+    --term-green: #5fd39a;
+    --term-orange: #e8a06a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #131614; --card: #1b201d; --ink: #e4e9e5; --ink-2: #a9b3ac; --ink-3: #78827b;
+      --line: #2c332f; --accent: #4cc38a; --accent-soft: #1d2f26;
+      --good: #4cc38a; --warn: #d9a84e; --warn-soft: #2f2818; --bad: #e08573; --bad-soft: #331f1a;
+      --bar-obs: #35a06b; --bar-clm: #bb8a3d;
+    }
+  }
+  :root[data-theme="light"] {
+    --paper: #f6f7f6; --card: #ffffff; --ink: #1c211e; --ink-2: #4c554f; --ink-3: #79837c;
+    --line: #dde3df; --accent: #1f7a4d; --accent-soft: #e7f2ec;
+    --good: #1f7a4d; --warn: #9a6b1f; --warn-soft: #f5ecd9; --bad: #a03d2e; --bad-soft: #f6e6e2;
+    --bar-obs: #1f7a4d; --bar-clm: #b07a2a;
+  }
+  :root[data-theme="dark"] {
+    --paper: #131614; --card: #1b201d; --ink: #e4e9e5; --ink-2: #a9b3ac; --ink-3: #78827b;
+    --line: #2c332f; --accent: #4cc38a; --accent-soft: #1d2f26;
+    --good: #4cc38a; --warn: #d9a84e; --warn-soft: #2f2818; --bad: #e08573; --bad-soft: #331f1a;
+    --bar-obs: #35a06b; --bar-clm: #bb8a3d;
+  }
+  body {
+    background: var(--paper); color: var(--ink);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+    margin: 0; padding: 0 20px 96px;
+  }
+  main { max-width: 900px; margin: 0 auto; }
+  h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.2; text-wrap: balance; }
+  h1 { font-size: 2.1rem; font-weight: 500; margin: 0 0 6px; }
+  h2 { font-size: 1.45rem; font-weight: 500; margin: 12px 0 6px; }
+  h3 { font-size: 1.08rem; font-weight: 600; margin: 28px 0 8px; }
+  .kicker {
+    font-size: .74rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin: 56px 0 6px;
+  }
+  .sub { color: var(--ink-2); margin: 0 0 4px; }
+  .meta { color: var(--ink-3); font-size: .85rem; }
+  p { margin: 10px 0; max-width: 70ch; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  code, .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .88em; }
+
+  .verdict { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 20px 24px; margin: 28px 0; }
+  .verdict-row { display: flex; gap: 14px; align-items: baseline; margin: 10px 0; }
+  .verdict-flag { flex: 0 0 96px; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .verdict-flag.no { color: var(--bad); }
+  .verdict-flag.yes { color: var(--good); }
+  .verdict-flag.mixed { color: var(--warn); }
+  .verdict-row p { margin: 0; }
+
+  .chip { display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 1px 8px; border-radius: 999px; vertical-align: 1px; }
+  .chip.v { background: var(--accent-soft); color: var(--good); }
+  .chip.s { background: var(--warn-soft); color: var(--warn); }
+  .chip.c { background: var(--bad-soft); color: var(--bad); }
+
+  /* ---- advertiser bank ---- */
+  .bank { display: grid; grid-template-columns: repeat(auto-fill, minmax(264px, 1fr)); gap: 14px; margin: 18px 0; }
+  .bcard { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .bhead { display: flex; align-items: center; gap: 10px; }
+  .tile { width: 38px; height: 38px; border-radius: 8px; flex: none; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 1.05rem; font-family: ui-monospace, Menlo, monospace; }
+  .bname { font-weight: 700; line-height: 1.2; }
+  .bname a { color: var(--ink); text-decoration: none; }
+  .bname a:hover { color: var(--accent); }
+  .bdom { font-size: .78rem; color: var(--ink-3); }
+  .bdom a { color: var(--accent); }
+  .bwhat { font-size: .85rem; color: var(--ink-2); margin: 0; }
+  .bcreative { font-family: ui-monospace, Menlo, monospace; font-size: .76rem; background: var(--term-bg); color: var(--term-ink); border-radius: 5px; padding: 6px 10px; overflow-x: auto; white-space: nowrap; }
+  .bfacts { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: .76rem; color: var(--ink-3); margin-top: auto; }
+  .bfacts b { color: var(--ink-2); font-weight: 600; }
+  .bank-note { font-size: .85rem; color: var(--ink-3); }
+  .minis { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .mini { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: .82rem; color: var(--ink-2); }
+
+  /* ---- flow diagram ---- */
+  .flowwrap { overflow-x: auto; margin: 18px 0; }
+  .flow { min-width: 720px; display: flex; flex-direction: column; gap: 10px; }
+  .lane { display: flex; align-items: stretch; gap: 0; }
+  .fnode { border-radius: 7px; padding: 9px 13px; font-size: .8rem; line-height: 1.45; flex: 1 1 0; min-width: 0; }
+  .fnode b { display: block; font-size: .84rem; }
+  .fnode .fdim { color: var(--ink-3); font-size: .74rem; }
+  .fnode.demand { background: var(--accent-soft); border: 1px solid var(--line); }
+  .fnode.middle { background: var(--warn-soft); border: 1px solid var(--line); }
+  .fnode.supply { background: var(--card); border: 1px solid var(--line); }
+  .fnode.ghost { background: transparent; border: 1.5px dashed var(--line); color: var(--ink-3); }
+  .farrow { flex: 0 0 34px; display: grid; place-items: center; color: var(--ink-3); font-size: 1.1rem; }
+  .farrow.dashed { color: var(--warn); }
+  .flowhead { display: flex; gap: 0; font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-3); font-weight: 600; }
+  .flowhead span { flex: 1 1 0; }
+  .flowhead .sp { flex: 0 0 34px; }
+
+  /* ---- chart ---- */
+  .chart { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px 10px; margin: 18px 0; }
+  .chart h3 { margin: 0 0 2px; }
+  .chart .csub { font-size: .82rem; color: var(--ink-3); margin: 0 0 14px; }
+  .legend { display: flex; gap: 18px; font-size: .78rem; color: var(--ink-2); margin: 0 0 12px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .plot { position: relative; }
+  .gridlines { position: absolute; inset: 0 0 22px 128px; }
+  .gridlines i { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--line); }
+  .crow { display: flex; align-items: center; gap: 0; height: 26px; position: relative; }
+  .clabel { flex: 0 0 128px; font-size: .76rem; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
+  .ctrack { flex: 1; position: relative; height: 14px; }
+  .cbar { position: absolute; top: 0; height: 14px; border-radius: 0 4px 4px 0; }
+  .cbar.range { border-radius: 4px; }
+  .cbar.obs { background: var(--bar-obs); }
+  .cbar.clm { background: var(--bar-clm); }
+  .cval { position: absolute; top: -2px; font-size: .72rem; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 6px; }
+  .caxis { display: flex; margin-left: 128px; justify-content: space-between; font-size: .7rem; color: var(--ink-3); padding-top: 6px; font-variant-numeric: tabular-nums; }
+  .cdivider { border: none; border-top: 1px dashed var(--line); margin: 10px 0 10px 128px; }
+
+  table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+  .tablewrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--line); border-radius: 6px; background: var(--card); }
+  th { text-align: left; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); font-weight: 600; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-2); }
+  td:first-child { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  .num { font-variant-numeric: tabular-nums; }
+  .master td { font-size: .82rem; }
+  .master { min-width: 980px; }
+  .master .cr { font-family: ui-monospace, Menlo, monospace; font-size: .74rem; }
+
+  .motives { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin: 18px 0; }
+  .motive { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
+  .motive h3 { margin: 0 0 6px; }
+  .motive p { font-size: .88rem; margin: 6px 0; }
+  .motive .who { font-size: .76rem; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+
+  .term { background: var(--term-bg); color: var(--term-ink); border-radius: 8px; padding: 14px 18px; margin: 14px 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .82rem; line-height: 1.85; overflow-x: auto; }
+  .term .lbl { color: var(--term-dim); font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; display: block; margin-bottom: 6px; }
+  .term .ad { white-space: nowrap; display: block; }
+  .term .spin { color: var(--term-orange); }
+  .term .brand { color: var(--term-green); font-weight: 600; }
+  .term .dim { color: var(--term-dim); }
+
+  .qa { border-left: 3px solid var(--accent); padding: 2px 0 2px 18px; margin: 22px 0; }
+  .qa h3 { margin: 0 0 6px; }
+  .qa p { margin: 6px 0; }
+
+  ul { padding-left: 20px; max-width: 72ch; }
+  li { margin: 6px 0; color: var(--ink-2); }
+  li strong, p strong { color: var(--ink); }
+  .src { font-size: .8rem; color: var(--ink-3); }
+  .foot { margin-top: 64px; border-top: 1px solid var(--line); padding-top: 20px; }
+  .foot li { font-size: .85rem; margin: 4px 0; }
+</style>
+
+<main>
+  <p class="kicker" style="margin-top:56px">Sponsored Code · Demand-Side Research · v2</p>
+  <h1>Who actually pays for ads in the terminal?</h1>
+  <p class="sub">The advertiser bank, the money flow, pricing, targeting and geo — evidence-first, to feed the monetization GTM.</p>
+  <p class="meta">July 6, 2026 · Sources: live network sites &amp; APIs (fetched today), two independent teardowns, HN/Product Hunt, funding press. Claims flagged <span class="chip v">verified</span> <span class="chip s">single-source</span> <span class="chip c">claimed</span></p>
+
+  <div class="verdict">
+    <h3 style="margin-top:0">The verdict on the GTM assumption</h3>
+    <div class="verdict-row">
+      <span class="verdict-flag no">Refuted</span>
+      <p>"There is an existing pool of advertisers already buying terminal inventory that we can win with lower CPM." The pool is real but tiny: <strong>~4 brands plus a dozen agent-economy micro-startups</strong>, and the entire live WaitSpin market has cleared <strong>under €10 total</strong>. There is no spend to undercut.</p>
+    </div>
+    <div class="verdict-row">
+      <span class="verdict-flag yes">Validated</span>
+      <p>"Real demand exists one level up." <strong>Gravity</strong> ($75M valuation) already fills a coding-agent network via API; <strong>Koah</strong> ($20.5M — Upwork, Skillshare) and <strong>ZeroClick</strong> ($55M — retail feeds) have funded brand demand and no dev-audience supply. Plugging in as their premium coding-agent supply is a live shortcut.</p>
+    </div>
+    <div class="verdict-row">
+      <span class="verdict-flag mixed">Reframe</span>
+      <p>The winnable advertiser is the <strong>Ramp/Sentry archetype</strong> — performance-run dev-tool and fintech buyers who already sponsor dev channels. They tried this in week one and left when nobody could prove the impressions. Measurement is the pitch, not price.</p>
+    </div>
+  </div>
+
+  <p class="kicker">Part 1</p>
+  <h2>The advertiser bank</h2>
+  <p>Every advertiser for which serve-level evidence exists, with domain, business model, creative, and what a click does. Clicking any terminal ad opens the destination URL in the default browser — bare landing-page links, no tracking macros, no measurement partners observed anywhere in the category.</p>
+
+  <h3>Real brands — bought Kickbacks in the launch window <span class="chip v">verified</span></h3>
+  <div class="bank">
+    <div class="bcard">
+      <div class="bhead"><span class="tile" style="background:#1a4d3e">R</span>
+        <div><div class="bname"><a href="https://ramp.com">Ramp</a></div><div class="bdom"><a href="https://ramp.com">ramp.com</a></div></div></div>
+      <p class="bwhat"><b>B2B fintech</b> — corporate cards &amp; spend management. Revenue: interchange + SaaS. The only advertiser with 2+ distinct creatives observed.</p>
+      <div class="bcreative">Ramp — Time is money. Save both.</div>
+      <div class="bcreative">Ramp — business cards that close themselves</div>
+      <div class="bfacts"><span><b>Click →</b> ramp.com</span><span><b>Net:</b> Kickbacks</span><span><b>Status:</b> launch week, not seen since</span></div>
+    </div>
+    <div class="bcard">
+      <div class="bhead"><span class="tile" style="background:#3d2a52">S</span>
+        <div><div class="bname"><a href="https://sentry.io">Sentry</a></div><div class="bdom"><a href="https://sentry.io">sentry.io</a></div></div></div>
+      <p class="bwhat"><b>Dev-tool SaaS</b> — error &amp; performance monitoring, PLG self-serve funnel. First-party confirmed buyer of dev podcasts (owns Syntax.fm), TLDR Web Dev, Reddit, technical YouTube.</p>
+      <div class="bcreative">creative copy not archived — observed serving by Southside teardown</div>
+      <div class="bfacts"><span><b>Click →</b> sentry.io</span><span><b>Net:</b> Kickbacks</span><span><b>Status:</b> launch week, not seen since</span></div>
+    </div>
+    <div class="bcard">
+      <div class="bhead"><span class="tile" style="background:#22536b">C</span>
+        <div><div class="bname"><a href="https://context.dev">Context.dev</a></div><div class="bdom"><a href="https://context.dev">context.dev</a></div></div></div>
+      <p class="bwhat"><b>YC S26 API startup</b> — structured web data for AI agents (powers Mintlify, Klarna, 280+ cos). Endemic buy: its customers are literally the people watching the spinner.</p>
+      <div class="bcreative">creative copy not archived — listed as verified payer in teardown</div>
+      <div class="bfacts"><span><b>Click →</b> context.dev</span><span><b>Net:</b> Kickbacks</span><span><b>Status:</b> launch window</span></div>
+    </div>
+    <div class="bcard">
+      <div class="bhead"><span class="tile" style="background:#6b4522">F</span>
+        <div><div class="bname">Feast</div><div class="bdom">identity unresolved <span class="chip s">single-source</span></div></div></div>
+      <p class="bwhat">Listed as the 4th verified payer. Most plausible candidate for a dev audience is <a href="https://feast.dev">feast.dev</a> (open-source ML feature store), but multiple "Feast" companies exist — unconfirmed.</p>
+      <div class="bcreative">creative copy not archived</div>
+      <div class="bfacts"><span><b>Net:</b> Kickbacks</span><span><b>Status:</b> launch window</span></div>
+    </div>
+    <div class="bcard">
+      <div class="bhead"><span class="tile" style="background:#2a5230">h</span>
+        <div><div class="bname">here.now</div><div class="bdom">agent hosting <span class="chip s">single-source</span></div></div></div>
+      <p class="bwhat"><b>Agent infrastructure</b> — free-hosting funnel for AI agents. Seen on the kickbacks.ai homepage rotation Jul 6.</p>
+      <div class="bcreative">here.now — free hosting for agents</div>
+      <div class="bfacts"><span><b>Net:</b> Kickbacks</span><span><b>Status:</b> live on homepage rotation</span></div>
+    </div>
+    <div class="bcard">
+      <div class="bhead"><span class="tile" style="background:#555c58">…</span>
+        <div><div class="bname">Kickbacks long tail</div><div class="bdom">observed serving, unnamed</div></div></div>
+      <p class="bwhat">Alpha-stage startups, a <b>GLP-1 weight-loss service</b>, a <b>bible-research CLI</b>, and competitor <b>earnd.dev</b> buying ads on Kickbacks. Documented by the 4-day Wireshark teardown.</p>
+      <div class="bfacts"><span><b>Net:</b> Kickbacks</span><span><b>Status:</b> rotational filler</span></div>
+    </div>
+  </div>
+
+  <h3>Live right now — WaitSpin market API, fetched Jul 6 <span class="chip v">verified</span></h3>
+  <p class="bank-note">The three "real" campaigns below are <strong>one founder's product suite</strong>: Citedy is the parent (AI-agentic agency, credit billing), AdClaw is its marketing-office product, Lnkgo its link tool. WaitSpin's non-house demand = a single affiliated buyer. Total cleared spend across the entire live market: <strong>~€7</strong>.</p>
+  <div class="bank">
+    <div class="bcard">
+      <div class="bhead"><span class="tile" style="background:#254a6b">C</span>
+        <div><div class="bname"><a href="https://citedy.com">Citedy</a></div><div class="bdom"><a href="https://citedy.com">citedy.com</a></div></div></div>
+      <p class="bwhat"><b>AI-agentic agency</b> — credit-based billing (1 credit = $0.01), SEO/content agents in 55 languages. Buying to reach agent operators.</p>
+      <div class="bcreative">Citedy — find growth gaps, ship fixes</div>
+      <div class="bfacts"><span><b>CPM:</b> €5.00</span><span><b>Imps:</b> 455 (~€2.30 spent)</span><span><b>Net:</b> WaitSpin</span></div>
+    </div>
+    <div class="bcard">
+      <div class="bhead"><span class="tile" style="background:#1f5c56">L</span>
+        <div><div class="bname"><a href="https://lnkgo.app">Lnkgo</a></div><div class="bdom"><a href="https://lnkgo.app">lnkgo.app</a></div></div></div>
+      <p class="bwhat"><b>SaaS utility</b> — branded short links, QR, analytics for agent workflows (curl/CLI-first). Same owner as Citedy.</p>
+      <div class="bcreative">Lnkgo — branded tracked links for agents</div>
+      <div class="bfacts"><span><b>CPM:</b> €5.00</span><span><b>Imps:</b> 449 (~€2.25 spent)</span><span><b>Net:</b> WaitSpin</span></div>
+    </div>
+    <div class="bcard">
+      <div class="bhead"><span class="tile" style="background:#5c3a24">A</span>
+        <div><div class="bname"><a href="https://adclaw.app">AdClaw</a></div><div class="bdom"><a href="https://adclaw.app">adclaw.app</a></div></div></div>
+      <p class="bwhat"><b>AI marketing office</b> — hosted from $10/mo, 122 skills, Telegram + web. Powered by Citedy (same owner).</p>
+      <div class="bcreative">AdClaw — AI marketing office for founders</div>
+      <div class="bfacts"><span><b>CPM:</b> €5.00</span><span><b>Imps:</b> 441 (~€2.20 spent)</span><span><b>Net:</b> WaitSpin</span></div>
+    </div>
+    <div class="bcard">
+      <div class="bhead"><span class="tile" style="background:#6b2a4a">T</span>
+        <div><div class="bname">Talents.Kids</div><div class="bdom">brand field null in API</div></div></div>
+      <p class="bwhat"><b>Consumer / parents</b> — "AI childs talents discovery." The category's only D2C-ish buyer, and clearly mistargeted at a developer audience.</p>
+      <div class="bcreative">AI Childs Talents Discovery</div>
+      <div class="bfacts"><span><b>CPM:</b> €2.00</span><span><b>Imps:</b> 32 (~€0.06 spent)</span><span><b>Net:</b> WaitSpin</span></div>
+    </div>
+  </div>
+
+  <h3>Routed through a middleman — Gravity → aicash <span class="chip s">single-source</span></h3>
+  <div class="bank">
+    <div class="bcard">
+      <div class="bhead"><span class="tile" style="background:#4a3a5c">A</span>
+        <div><div class="bname">ADSentry</div><div class="bdom">dev-tool micro-SaaS</div></div></div>
+      <p class="bwhat"><b>JWT error monitoring</b> — free-trial funnel. Served into aicash terminals by the Gravity ad network's contextual endpoint; the advertiser likely never chose "terminal" as a placement.</p>
+      <div class="bcreative">ADSentry — catch JWT errors before your users do · try free</div>
+      <div class="bfacts"><span><b>CPM:</b> ~$2 (pooled)</span><span><b>Pipe:</b> Gravity → aicash</span></div>
+    </div>
+  </div>
+
+  <h3>House ads &amp; self-dealing (not real demand, but fills the queues)</h3>
+  <div class="minis">
+    <span class="mini">Firecrawl — Kickbacks house placeholder, never paid</span>
+    <span class="mini">WaitSpin — advertises itself, 2 of 6 live campaigns</span>
+    <span class="mini">earnd.dev — competitor network buying on Kickbacks</span>
+    <span class="mini">"nasdaq_for_ads" — Kickbacks self-promo slot</span>
+  </div>
+
+  <h3>Anonymous micro-advertisers (Sponsoric, USDC-paid)</h3>
+  <div class="minis">
+    <span class="mini">Costless</span><span class="mini">Punchbit</span><span class="mini">Guten</span>
+    <span class="mini">Hustlable</span><span class="mini">Oddworth</span><span class="mini">Kath</span>
+  </div>
+
+  <h3>For contrast: named demand in the adjacent chat-ads category <span class="chip v">verified</span></h3>
+  <div class="minis">
+    <span class="mini"><b>Upwork</b> — marketplace take-rate · Koah CPC</span>
+    <span class="mini"><b>Skillshare</b> — subscription edtech · Koah</span>
+    <span class="mini"><b>General Medicine</b> — healthcare · Koah</span>
+    <span class="mini"><b>Bitly</b> — SaaS · Koah native placements</span>
+    <span class="mini"><b>Ollie</b> — app installs · Koah ContextMatch</span>
+    <span class="mini"><b>Walmart / Amazon / Target / eBay / Expedia / DoorDash</b> — ZeroClick retail feeds <span class="chip s">single-source</span></span>
+  </div>
+
+  <p class="kicker">Part 2</p>
+  <h2>The money flow — who sits between whom</h2>
+  <p>Five lanes exist today. Only lane 3 has a working middleman; lanes 4–5 are funded demand pools with an <strong>open seat where coding-agent supply should be</strong> — that seat is the GTM opportunity.</p>
+  <div class="flowwrap"><div class="flow">
+    <div class="flowhead"><span>Demand</span><span class="sp"></span><span>Network / middleman</span><span class="sp"></span><span>Supply (who shows the ad)</span></div>
+    <div class="lane">
+      <div class="fnode demand"><b>Direct brands, self-serve</b>Ramp · Sentry · Context.dev · Feast · here.now + long tail<span class="fdim">Stripe form, $0.50+/block, no sales contact</span></div>
+      <div class="farrow">→</div>
+      <div class="fnode middle"><b>Kickbacks</b><span class="fdim">keeps 30–50% · open auction · click = 50 imps</span></div>
+      <div class="farrow">→</div>
+      <div class="fnode supply"><b>Claude Code + Codex devs</b><span class="fdim">50–70% rev share via Stripe Connect</span></div>
+    </div>
+    <div class="lane">
+      <div class="fnode demand"><b>One affiliated buyer + oddities</b>Citedy suite (AdClaw, Lnkgo) · Talents.Kids<span class="fdim">plus WaitSpin's own house ads</span></div>
+      <div class="farrow">→</div>
+      <div class="fnode middle"><b>WaitSpin</b><span class="fdim">keeps 40% · €1–5 CPM blocks · Stripe</span></div>
+      <div class="farrow">→</div>
+      <div class="fnode supply"><b>10 CLI tools</b><span class="fdim">Claude Code, Copilot CLI, Devin, OpenCode…</span></div>
+    </div>
+    <div class="lane">
+      <div class="fnode demand"><b>Advertisers on Gravity</b><span class="fdim">contextual demand pool — brands undisclosed; ADSentry observed</span></div>
+      <div class="farrow dashed">⇢</div>
+      <div class="fnode middle"><b>Gravity ($75M val)</b> → <b>aicash</b><span class="fdim">the only live aggregator pipe · ~$0.02/serve · aicash keeps 30%</span></div>
+      <div class="farrow">→</div>
+      <div class="fnode supply"><b>7 agent hosts</b><span class="fdim">OpenCode, Hermes…</span></div>
+    </div>
+    <div class="lane">
+      <div class="fnode demand"><b>Upwork · Skillshare · Bitly · Ollie · Gen. Medicine</b><span class="fdim">CPC-first, semi-managed</span></div>
+      <div class="farrow">→</div>
+      <div class="fnode middle"><b>Koah ($20.5M A)</b><span class="fdim">$10 eCPM claim · 3–7.5% CTR claim</span></div>
+      <div class="farrow dashed">⇢</div>
+      <div class="fnode ghost"><b>Chat apps only</b> (Luzia, Liner, Heal, DeepAI)<span class="fdim">no coding-agent supply — open seat</span></div>
+    </div>
+    <div class="lane">
+      <div class="fnode demand"><b>Retail feeds</b> Walmart · Amazon · Target · eBay · Expedia · DoorDash<span class="fdim">"Ad Story Units" from landing pages + Google Ads data</span></div>
+      <div class="farrow">→</div>
+      <div class="fnode middle"><b>ZeroClick ($55M)</b><span class="fdim">CPC · Honey-founder DNA (affiliate ingestion)</span></div>
+      <div class="farrow dashed">⇢</div>
+      <div class="fnode ghost"><b>AI shopping surfaces</b><span class="fdim">audience mismatch for dev inventory</span></div>
+    </div>
+    <div class="lane">
+      <div class="fnode demand ghost"><b>No demand side at all</b><span class="fdim">waitlists &amp; "payouts soon"</span></div>
+      <div class="farrow">→</div>
+      <div class="fnode middle"><b>ClaudeCodeAds · Idlen · IdleDev · Rebates.ai · 7 status-line players</b><span class="fdim">empty queues, mock ads (Acme DB, Linear), fabricated testimonials</span></div>
+      <div class="farrow">→</div>
+      <div class="fnode supply"><b>npm installers</b><span class="fdim">2K–2.7K downloads/mo each</span></div>
+    </div>
+  </div></div>
+
+  <p class="kicker">Part 3</p>
+  <h2>Master table — every advertiser with serve evidence</h2>
+  <div class="tablewrap"><table class="master">
+    <tr><th>Advertiser</th><th>Domain / landing</th><th>Business model</th><th>Network</th><th>Creative line</th><th>On click</th><th>CPM</th><th>Geo</th><th>Status</th></tr>
+    <tr><td>Ramp</td><td><a href="https://ramp.com">ramp.com</a></td><td>B2B fintech (interchange + SaaS)</td><td><a href="https://kickbacks.ai">Kickbacks</a></td><td class="cr">"Time is money. Save both." / "business cards that close themselves"</td><td>ramp.com homepage; billed as 50 imps</td><td class="num">~$11–22 eCPM launch wk (derived)</td><td>ships worldwide default</td><td><span class="chip s">churned</span></td></tr>
+    <tr><td>Sentry</td><td><a href="https://sentry.io">sentry.io</a></td><td>Dev-tool SaaS, PLG</td><td><a href="https://kickbacks.ai">Kickbacks</a></td><td class="cr">not archived</td><td>sentry.io</td><td class="num">launch-window auction</td><td>—</td><td><span class="chip s">churned</span></td></tr>
+    <tr><td>Context.dev</td><td><a href="https://context.dev">context.dev</a></td><td>YC S26 — web-data API for agents</td><td><a href="https://kickbacks.ai">Kickbacks</a></td><td class="cr">not archived</td><td>context.dev</td><td class="num">launch-window auction</td><td>—</td><td><span class="chip s">churned</span></td></tr>
+    <tr><td>Feast</td><td>unresolved (likely <a href="https://feast.dev">feast.dev</a>)</td><td>OSS feature store (if feast.dev)</td><td><a href="https://kickbacks.ai">Kickbacks</a></td><td class="cr">not archived</td><td>—</td><td class="num">launch-window auction</td><td>—</td><td><span class="chip s">churned</span></td></tr>
+    <tr><td>here.now</td><td>here.now</td><td>Agent hosting, free-tier funnel</td><td><a href="https://kickbacks.ai">Kickbacks</a></td><td class="cr">"free hosting for agents"</td><td>here.now</td><td class="num">≥$0.50/block floor</td><td>worldwide default</td><td><span class="chip v">live</span></td></tr>
+    <tr><td>Citedy</td><td><a href="https://citedy.com">citedy.com</a></td><td>AI-agentic agency, credits (1¢)</td><td><a href="https://waitspin.com">WaitSpin</a></td><td class="cr">"find growth gaps, ship fixes"</td><td>citedy.com</td><td class="num">€5.00</td><td>no geo controls on WaitSpin</td><td><span class="chip v">live</span></td></tr>
+    <tr><td>Lnkgo</td><td><a href="https://lnkgo.app">lnkgo.app</a></td><td>SaaS link tool for agents</td><td><a href="https://waitspin.com">WaitSpin</a></td><td class="cr">"branded tracked links for agents"</td><td>lnkgo.app</td><td class="num">€5.00</td><td>—</td><td><span class="chip v">live</span></td></tr>
+    <tr><td>AdClaw</td><td><a href="https://adclaw.app">adclaw.app</a></td><td>AI marketing office, $10/mo hosted</td><td><a href="https://waitspin.com">WaitSpin</a></td><td class="cr">"AI marketing office for founders"</td><td>adclaw.app</td><td class="num">€5.00</td><td>—</td><td><span class="chip v">live</span></td></tr>
+    <tr><td>Talents.Kids</td><td>talents.kids</td><td>Consumer — kids talent discovery</td><td><a href="https://waitspin.com">WaitSpin</a></td><td class="cr">"AI Childs Talents Discovery"</td><td>talents.kids</td><td class="num">€2.00</td><td>—</td><td><span class="chip v">live</span></td></tr>
+    <tr><td>ADSentry</td><td>via Gravity</td><td>JWT-monitoring micro-SaaS, free trial</td><td><a href="https://aicash.fun">aicash</a> ← <a href="https://www.trygravity.ai">Gravity</a></td><td class="cr">"catch JWT errors before your users do · try free"</td><td>trial signup page</td><td class="num">~$2 pooled</td><td>contextual, geo-agnostic</td><td><span class="chip s">observed</span></td></tr>
+    <tr><td>Firecrawl</td><td><a href="https://firecrawl.dev">firecrawl.dev</a></td><td>house placeholder — never paid</td><td>Kickbacks</td><td class="cr">house slot</td><td>firecrawl.dev</td><td class="num">$0</td><td>—</td><td><span class="chip c">house</span></td></tr>
+    <tr><td>earnd.dev</td><td>earnd.dev</td><td>competitor ad network (!)</td><td>Kickbacks</td><td class="cr">not archived</td><td>earnd.dev</td><td class="num">floor</td><td>—</td><td><span class="chip s">observed</span></td></tr>
+    <tr><td>GLP-1 service</td><td>unnamed</td><td>telehealth D2C</td><td>Kickbacks</td><td class="cr">not archived</td><td>—</td><td class="num">floor</td><td>US-shaped offer</td><td><span class="chip s">observed</span></td></tr>
+    <tr><td>Bible CLI</td><td>unnamed</td><td>hobby CLI tool</td><td>Kickbacks</td><td class="cr">not archived</td><td>—</td><td class="num">floor</td><td>—</td><td><span class="chip s">observed</span></td></tr>
+  </table></div>
+  <p class="src">"Churned" = verified as a payer in the June 11–14 launch window, absent from every later snapshot (empty queue Jul 6). CPM notes: Kickbacks bills clicks at 50× the impression rate — a $2 CPM buyer pays $0.10/click, which is why nobody bothered building CPC.</p>
+
+  <p class="kicker">Part 4</p>
+  <h2>The hype gap — claimed vs. clearing CPM</h2>
+  <div class="chart">
+    <h3>Effective CPM by advertiser / network (USD, EUR≈parity)</h3>
+    <p class="csub">Amber = what marketing pages and the $19-guide blogger claim. Green = what live APIs and teardowns actually show clearing. Hover any bar for the source.</p>
+    <div class="legend"><span><i style="background:var(--bar-clm)"></i>Claimed (marketing)</span><span><i style="background:var(--bar-obs)"></i>Observed (live API / teardown)</span></div>
+    <div class="plot">
+      <div class="gridlines"><i style="left:0%"></i><i style="left:22.7%"></i><i style="left:45.4%"></i><i style="left:68.2%"></i><i style="left:90.9%"></i></div>
+      <div class="crow"><span class="clabel">Idlen (claim)</span><div class="ctrack" title="idlen.io/advertisers: 'Target CPM €35', ranges €20–42 cited on dev.to — network has fabricated metrics"><div class="cbar clm range" style="left:45.4%;width:50%"></div><span class="cval" style="left:95.4%">€20–42</span></div></div>
+      <div class="crow"><span class="clabel">Sponsoric (claim)</span><div class="ctrack" title="dev.to comparison (author sells $19 guide)"><div class="cbar clm range" style="left:34.1%;width:45.4%"></div><span class="cval" style="left:79.5%">$15–35</span></div></div>
+      <div class="crow"><span class="clabel">Kickbacks (claim)</span><div class="ctrack" title="dev.to comparison: '$8–15 CPM'"><div class="cbar clm range" style="left:18.2%;width:15.9%"></div><span class="cval" style="left:34.1%">$8–15</span></div></div>
+      <div class="crow"><span class="clabel">Koah eCPM (claim)</span><div class="ctrack" title="Koah's own materials: $10 average eCPM, chat-ads category"><div class="cbar clm" style="left:0;width:22.7%"></div><span class="cval" style="left:22.7%">$10</span></div></div>
+      <hr class="cdivider">
+      <div class="crow"><span class="clabel">Ramp, launch wk</span><div class="ctrack" title="Derived: HN user earned $4.43/407 imps at 50% share → ~$21.8 gross. Lasted days."><div class="cbar obs" style="left:0;width:49.5%"></div><span class="cval" style="left:49.5%">~$21.8 (3 days, derived)</span></div></div>
+      <div class="crow"><span class="clabel">Citedy / Lnkgo / AdClaw</span><div class="ctrack" title="api.waitspin.com/v1/market, Jul 6: 5,000,000 micros = €5.00"><div class="cbar obs" style="left:0;width:12.3%"></div><span class="cval" style="left:12.3%">€5.00 live</span></div></div>
+      <div class="crow"><span class="clabel">Rebates.ai flat</span><div class="ctrack" title="$0.005 per impression flat = $5 CPM equivalent"><div class="cbar obs" style="left:0;width:11.4%"></div><span class="cval" style="left:11.4%">$5.00 flat</span></div></div>
+      <div class="crow"><span class="clabel">Talents.Kids</span><div class="ctrack" title="WaitSpin market API, Jul 6"><div class="cbar obs" style="left:0;width:4.5%"></div><span class="cval" style="left:4.5%">€2.00 live</span></div></div>
+      <div class="crow"><span class="clabel">Gravity → aicash</span><div class="ctrack" title="aicash.fun illustrative $2 CPM; Gravity docs show ~$0.02/serve payout"><div class="cbar obs" style="left:0;width:4.5%"></div><span class="cval" style="left:4.5%">~$2.00</span></div></div>
+      <div class="crow"><span class="clabel">Kickbacks floor, Jul 6</span><div class="ctrack" title="Southside teardown: $1.09 clearing floor, no competing bids; queue empty Jul 6"><div class="cbar obs" style="left:0;width:2.5%"></div><span class="cval" style="left:2.5%">$1.09, no bids above floor</span></div></div>
+    </div>
+    <div class="caxis"><span>$0</span><span>$10</span><span>$20</span><span>$30</span><span>$40+</span></div>
+  </div>
+  <p>Read the gap: everything above the divider is a number someone <em>wants</em>; everything below is a number someone <em>paid</em>. The only observed premium ($21.8 derived) existed during a 5.5M-view viral spike and collapsed to a $1 floor within three weeks.</p>
+
+  <p class="kicker">Part 5</p>
+  <h2>Geo &amp; targeting — what the ad tech can actually do</h2>
+  <div class="tablewrap"><table>
+    <tr><th>Network</th><th>Geo targeting</th><th>Other targeting</th><th>Evidence quality</th></tr>
+    <tr><td>Kickbacks</td><td><strong>Worldwide by default.</strong> Form says "Showing everywhere. Add countries to limit who your views are spent on" — optional country include-list, no enumerated regions shown.</td><td>Surface (Extension = clickable "premium" vs Terminal CLI = ambient/cheaper, separate auctions) · delivery speed (Slow ~2d / Medium ~6h / Fast ASAP). No dayparting, no frequency caps, no context/stack targeting.</td><td><span class="chip v">verified</span> live form</td></tr>
+    <tr><td>WaitSpin</td><td>None visible in the market API or docs. EUR-denominated pricing, Portuguese company, SEPA rails — European center of gravity.</td><td>None. Fixed blocks only, "not open-end click promises."</td><td><span class="chip v">verified</span> live API</td></tr>
+    <tr><td>Idlen</td><td>Claims "developers from 120+ countries."</td><td>Claims targeting "by tech stack (React, TypeScript, Python, Go, Rust +50), geography, IDE, browser, or behavioral segment" — from a network with fabricated installs/testimonials. Treat as a pitch deck, not a product.</td><td><span class="chip c">claimed</span></td></tr>
+    <tr><td>ClaudeCodeAds</td><td>None.</td><td>None — copy, URL, bid. "Go live in 60 seconds. Zero sales calls."</td><td><span class="chip v">verified</span> live form</td></tr>
+    <tr><td>Gravity (aggregator)</td><td>Geo-agnostic; contextual.</td><td>Reads recent session context, returns one relevant ad per session — the only real targeting in the coding-agent supply chain today.</td><td><span class="chip s">single-source</span></td></tr>
+    <tr><td>Koah (chat category)</td><td>Device targeting (all/custom).</td><td>Up to 5 campaign "themes" + real-time query/intent matching ("ContextMatch"); formats: card, sponsored response, poll, quick pick.</td><td><span class="chip v">verified</span> advertiser page</td></tr>
+  </table></div>
+  <p><strong>Are they after US users or global?</strong> Nobody in the terminal category is geo-buying in any meaningful way. Kickbacks buyers ship worldwide-by-default because volume is so small that slicing it makes campaigns undeliverable; WaitSpin can't slice at all. The audience skews US/EU by nature (Claude Code's installed base), so US-heavy advertisers like Ramp and the GLP-1 service get de-facto US delivery without asking for it. The strategic read: <strong>geo, tech-stack, and session-context targeting are whitespace</strong> — the "additional adtech value" you hypothesized genuinely does not exist here yet, except one layer up at Gravity.</p>
+
+  <p class="kicker">Part 6</p>
+  <h2>Why do they advertise here? Four motives, four business models</h2>
+  <div class="motives">
+    <div class="motive">
+      <span class="who">Motive 1 — Endemic distribution</span>
+      <h3>Agent-economy startups</h3>
+      <p><b>Who:</b> Citedy/AdClaw/Lnkgo, here.now, ADSentry, Context.dev, Sponsoric's six.</p>
+      <p><b>Model:</b> subscription/credit SaaS selling <em>to agent operators</em>. The person watching a Claude Code spinner is their exact ICP, so €5 CPM on a few hundred impressions is essentially free hyper-targeted distribution (~€2/campaign) plus novelty PR. These are the only buyers who persist — and the natural seed demand for any new network.</p>
+    </div>
+    <div class="motive">
+      <span class="who">Motive 2 — Cheap experiment in a viral moment</span>
+      <h3>Dev-channel performance buyers</h3>
+      <p><b>Who:</b> Ramp (fintech, interchange + SaaS), Sentry (PLG dev-tool SaaS), likely Feast.</p>
+      <p><b>Model:</b> high-LTV products with permanent dev-media budgets (podcasts, TLDR, Reddit, Carbon/EthicalAds-class buys). They bought the launch spike as a brand test, got zero measurement back, and left. They advertise <em>where developers are</em> as policy — they'll return for whoever can prove the audience. This is the segment a real GTM wins.</p>
+    </div>
+    <div class="motive">
+      <span class="who">Motive 3 — Self-dealing &amp; optics</span>
+      <h3>The networks themselves</h3>
+      <p><b>Who:</b> WaitSpin house ads (2 of 6 campaigns), Kickbacks' Firecrawl placeholder and "nasdaq_for_ads", earnd.dev buying on Kickbacks.</p>
+      <p><b>Model:</b> filling empty inventory so the product doesn't look dead. Not demand — but it inflates every "advertisers" count you'll see quoted, so discount roster claims accordingly.</p>
+    </div>
+    <div class="motive">
+      <span class="who">Motive 4 — Routed, not chosen</span>
+      <h3>Aggregator spillover</h3>
+      <p><b>Who:</b> whatever Gravity's contextual pool holds (ADSentry observed); tomorrow, potentially Koah's Upwork/Skillshare class.</p>
+      <p><b>Model:</b> the advertiser buys "AI contexts" from the aggregator and the terminal is just one placement in the mix — they may not know or care. This is the only demand that scales without a sales team, and it's how a new network gets day-one fill.</p>
+    </div>
+  </div>
+
+  <p class="kicker">Part 7</p>
+  <h2>Your original questions, answered straight</h2>
+
+  <div class="qa">
+    <h3>Who are the advertisers?</h3>
+    <p>Verified real brands in the entire category, ever: <strong>Ramp, Sentry, Context.dev (YC S26), Feast</strong> — all on Kickbacks, all around the June 11 launch spike. <span class="chip v">verified</span> Everything else observed serving is long tail: agent-economy micro-startups, a GLP-1 weight-loss service, a bible-research CLI, and — tellingly — <strong>competitor networks buying each other's inventory</strong>. No agencies, no Taboola/Outbrain-class arbitrage demand. These are the dev-channel sponsorship crowd plus founder friends.</p>
+  </div>
+
+  <div class="qa">
+    <h3>What model do they pay on?</h3>
+    <p><strong>CPM, self-serve, everywhere.</strong> The category standard is "blocks" of 1,000 timed impressions (5s at Kickbacks, 10s at ClaudeCodeAds), bid via Stripe with a $0.50–$1 minimum, live in minutes, zero sales calls. Clicks exist as a CPM multiplier, not a CPC market — Kickbacks bills a click as 50 impressions. <span class="chip v">verified</span> Exceptions: Rebates.ai pays a flat $0.005/impression; Sponsoric and PicoAds are CPC/affiliate paid in USDC. The adjacent chat-ads networks are the reverse: Koah is CPC-first (CPM only for awareness), ZeroClick is pure CPC.</p>
+  </div>
+
+  <div class="qa">
+    <h3>If it's CPM — why is that good for them?</h3>
+    <p>It isn't, and the market is saying so. CPM exists here because <strong>nobody can measure anything else</strong>: a one-line text ad in a terminal has no viewability standard, no pixel, and client-side counting that was demonstrably gameable (a documented Kickbacks bug let one bot earn ~$400/day). Advertisers responded by pricing it as junk: $8–42 CPM on marketing pages vs. an observed <strong>$1.09 clearing floor with no competitive bidding</strong>. <span class="chip v">verified</span></p>
+  </div>
+
+  <div class="qa">
+    <h3>Do developers actually click and convert?</h3>
+    <p><strong>No evidence anywhere.</strong> Across every network: zero advertiser case studies, zero CTR disclosures, zero renewal signals. The strongest negative signal is behavioral: the launch-week buyers did not visibly return, and the market leader's queue reads "No queued bids — first bid takes #1 instantly" three weeks after a 5.5M-view launch. <span class="chip v">verified</span> Contrast the chat-ads category, which publishes performance: Koah claims 3% CTR at scale (7.5% early) and $10 eCPM. <span class="chip c">claimed</span> Intent lives where the user is asking a question — not where they're waiting for a diff.</p>
+  </div>
+
+  <div class="qa">
+    <h3>Performance buyers, brands, or D2C?</h3>
+    <p>Performance buyers wearing a brand-awareness costume. Ramp and Sentry are sophisticated dev-audience performance advertisers — Sentry states first-party that its highest-growth channels are technical YouTube, dev podcasts (it bought Syntax.fm), TLDR Web Dev and Reddit. Their terminal creatives are awareness one-liners because the channel can't attribute anything. The moment a network offers real attribution, these buyers can move budget on performance math — that's the wedge.</p>
+  </div>
+
+  <div class="qa">
+    <h3>How were these advertisers brought in?</h3>
+    <p>Not sold — <strong>harvested from a viral moment.</strong> Kickbacks' entire demand motion was Andrew McCalip's June 11 launch tweet (5.5M views) plus a $0.50-minimum self-serve form. Context.dev is a YC S26 company reaching the YC/dev crowd — network-proximity buying, not pipeline. No coding-agent network has a sales team, an agency relationship, or a pricing page aimed at a media buyer. Nobody in this category has ever actually <em>sold</em> this inventory. <span class="chip v">verified</span></p>
+  </div>
+
+  <p class="kicker">Part 8</p>
+  <h2>The creatives, as they actually ran</h2>
+  <p>One-line text ads in the Claude Code spinner/status line — rendered verbatim from primary sources. On the Kickbacks "Extension" surface the line is a clickable hyperlink; in the Terminal CLI it's ambient (cmd+click opens the browser).</p>
+
+  <div class="term">
+    <span class="lbl">Kickbacks · Claude Code spinner · verified creatives</span>
+    <span class="ad"><span class="spin">✳ Percolating…</span>  <span class="dim">ad·</span> <span class="brand">Ramp</span> — Time is money. Save both. <span class="dim">→ ramp.com</span></span>
+    <span class="ad"><span class="spin">✳ Baking…</span>  <span class="dim">ad·</span> <span class="brand">Ramp</span> — business cards that close themselves</span>
+    <span class="ad"><span class="spin">✳ Discombobulating…</span>  <span class="dim">ad·</span> <span class="brand">here.now</span> — free hosting for agents</span>
+    <span class="ad"><span class="spin">✳ Thinking…</span>  <span class="dim">ad·</span> <span class="brand">Firecrawl</span> <span class="dim">(house placeholder — never a paying advertiser)</span></span>
+  </div>
+  <p class="src">Sources: kickbacks.ai live site (Jul 6), kickbacks-kit archive repo, Southside CHI teardown, go-to-agency teardown. Creative spec: 3–60 chars of copy + URL + optional 64KB icon. Ramp is the only advertiser with 2+ distinct creatives observed.</p>
+
+  <div class="term">
+    <span class="lbl">WaitSpin · live market API · fetched Jul 6, 2026</span>
+    <span class="ad"><span class="dim">€5.00 CPM</span>  <span class="brand">Citedy</span> — find growth gaps, ship fixes <span class="dim">· 455 imps</span></span>
+    <span class="ad"><span class="dim">€5.00 CPM</span>  <span class="brand">Lnkgo</span> — branded tracked links for agents <span class="dim">· 449 imps</span></span>
+    <span class="ad"><span class="dim">€5.00 CPM</span>  <span class="brand">AdClaw</span> — AI marketing office for founders <span class="dim">· 441 imps</span></span>
+    <span class="ad"><span class="dim">€2.00 CPM</span>  <span class="brand">Talents.Kids</span> — AI Childs Talents Discovery <span class="dim">· 32 imps</span></span>
+    <span class="ad"><span class="dim">€2.00 CPM</span>  <span class="brand">WaitSpin</span> — earn from AI wait states <span class="dim">· house ad</span></span>
+    <span class="ad"><span class="dim">€1.00 CPM</span>  <span class="brand">WaitSpin</span> — earn from AI wait states <span class="dim">· house ad</span></span>
+  </div>
+  <p class="src">Source: api.waitspin.com/v1/market, raw. Six campaigns; ~2,000 lifetime impressions network-wide; total cleared spend ~€7.</p>
+
+  <div class="term">
+    <span class="lbl">aicash · demand outsourced to Gravity · example serve</span>
+    <span class="ad"><span class="dim">ad·</span> <span class="brand">ADSentry</span> — catch JWT errors before your users do <span class="dim">· try free</span></span>
+  </div>
+  <p class="src">Source: aicash.fun. Note the copycat naming ("ADSentry" ≠ Sentry). aicash holds no demand relationships itself — it calls Gravity's contextual ad endpoint per session.</p>
+
+  <p class="kicker">Part 9</p>
+  <h2>Market map: three demand models, one empty room</h2>
+  <div class="tablewrap"><table>
+    <tr><th>Demand model</th><th>Who</th><th>How it works</th><th>Real advertisers today</th></tr>
+    <tr>
+      <td>Direct self-serve auction</td>
+      <td>Kickbacks, WaitSpin, ClaudeCodeAds, Idlen, IdleDev, IdleAds, earnd.dev + status-line long tail</td>
+      <td>Stripe form, $0.50+/block CPM, no sales team, no aggregation. Demand = whoever the launch tweet reached.</td>
+      <td>~4 brands ever (Kickbacks, launch week); today: empty queues, or one affiliated buyer cluster (WaitSpin)</td>
+    </tr>
+    <tr>
+      <td>Outsourced / aggregated</td>
+      <td>aicash → <strong>Gravity</strong>; PicoAds (on-chain affiliate); Sponsoric (USDC CPC, x402-style API)</td>
+      <td>Supply shell plugs into an external demand engine or affiliate offers. The only model that scales demand without a sales team.</td>
+      <td>Gravity claims "millions of ads/day" across AI apps <span class="chip c">claimed</span>; Sponsoric: 6 anonymous micro-sites</td>
+    </tr>
+    <tr>
+      <td>No demand at all</td>
+      <td>Rebates.ai (parent monetizes agent traces), AgenticAds, BuilderPerks, waitad, uwait, WaitState…</td>
+      <td>Waitlists, "payouts soon," flat per-impression promises with no advertiser side visible.</td>
+      <td>None</td>
+    </tr>
+  </table></div>
+
+  <p class="kicker">Part 10</p>
+  <h2>The adjacent demand pools (where the money already is)</h2>
+  <div class="tablewrap"><table>
+    <tr><th>Player</th><th>Funding</th><th>Model</th><th>Named demand</th><th>Relevance to us</th></tr>
+    <tr>
+      <td>Gravity<br><span class="src">trygravity.ai</span></td>
+      <td class="num">Seed @ $75M val (Oct '25)</td>
+      <td>Contextual ad API for AI apps; ~$0.02/serve payout example in docs</td>
+      <td>Undisclosed; aicash's sole demand source</td>
+      <td><strong>Highest.</strong> Already accepts coding-agent supply (aicash proves the pipe). A fraud-clean, server-side-counted terminal network is a better publisher for them than anything they have.</td>
+    </tr>
+    <tr>
+      <td>Koah<br><span class="src">koahlabs.com</span></td>
+      <td class="num">$20.5M Series A (Theory)</td>
+      <td>CPC-first (CPM for awareness), affiliate CPA; semi-managed ("brief us → we build the creative")</td>
+      <td>Upwork, Skillshare, General Medicine, Bitly, Ollie; serves in Luzia, Liner, Heal, DeepAI <span class="chip v">verified</span></td>
+      <td>High. Real brand budgets buying AI-context CPC; no dev-audience supply in their portfolio yet.</td>
+    </tr>
+    <tr>
+      <td>ZeroClick<br><span class="src">zeroclick.ai</span></td>
+      <td class="num">$55M (Anthos, Protagonist, Anfa)</td>
+      <td>CPC; "Ad Story Units" built from landing pages + Google Ads data — reads as retail feed ingestion, not 10K direct relationships</td>
+      <td>Walmart, Amazon, Target, eBay, Expedia, DoorDash cited; LABJ frames these as "able to use" <span class="chip s">single-source</span></td>
+      <td>Low-medium. Retail/shopping demand mismatched to a developer audience; founder is Honey's Ryan Hudson (affiliate DNA).</td>
+    </tr>
+    <tr>
+      <td>Nexad<br><span class="src">nex.ad</span></td>
+      <td class="num">$6M (a16z, Prosus, Point72)</td>
+      <td>Managed retainer + performance incentives; placements claimed in ChatGPT/Gemini/Perplexity/Copilot contexts</td>
+      <td>7 AI apps, ~30M consumers via iAsk, Dippy AI <span class="chip c">claimed</span></td>
+      <td>Low. Managed-service agency shape, no self-serve demand to tap.</td>
+    </tr>
+  </table></div>
+
+  <p class="kicker">Part 11</p>
+  <h2>What this means for the GTM</h2>
+  <ul>
+    <li><strong>Kill the "undercut on CPM" opener.</strong> At a $1 observed floor there is no price to beat and no incumbent spend to steal. Price is not the problem — <em>proof</em> is. Every documented failure is measurement-shaped: client-side counting, a $400/day bot, empty auction, throttled payouts.</li>
+    <li><strong>Seed with the endemic segment (Motive 1).</strong> Agent-economy startups buy this inventory on their own initiative today at €5 CPM — an outbound list of Citedy-class agent-tool companies is a same-week fill strategy.</li>
+    <li><strong>Sell to the archetype, not the channel's past buyers (Motive 2).</strong> The prospect database already exists: Carbon Ads / EthicalAds / BuySellAds buyer lists, TLDR &amp; Console.dev sponsors, Changelog and Syntax.fm advertisers, YC dev-tool batches. First offer: measured pilot with server-side counting, fraud filtering, and cost-per-verified-session — CPM as a floor, not the product.</li>
+    <li><strong>Plug into Gravity/Koah for day-one fill (Motive 4).</strong> The aicash→Gravity pipe proves an aggregator will monetize coding-agent supply today — solving cold-start while direct sales ramps.</li>
+    <li><strong>Own the measurement narrative to educate the market.</strong> The category burned its first advertisers in three weeks. The share-of-voice play works, but the content is "here's why your terminal ads didn't work and how verified attention fixes it" — positioning MCG as the adult in a room of solo side-projects (13 of 14 networks are one-person, unincorporated, or dead).</li>
+    <li><strong>Build the targeting nobody has.</strong> Geo, tech-stack, and session-context targeting are whitespace in the terminal category (Part 5). Idlen markets it and can't ship it; Gravity does it one layer up. Real targeting + real measurement is the "additional adtech value" wedge, exactly as hypothesized.</li>
+    <li><strong>Watch the platform risk line.</strong> Anthropic's Super Bowl position ("Ads are coming to AI. But not to Claude") and the OpenCode legal precedent are the category's kill switch — keep the advertiser pitch multi-surface (CLI + IDE + chat bridge) rather than Claude-only.</li>
+  </ul>
+
+  <div class="foot">
+    <h3 style="margin-top:0">Sources of truth</h3>
+    <ul>
+      <li><strong>Live primary (fetched Jul 6, 2026):</strong> <a href="https://kickbacks.ai/">kickbacks.ai</a> (bid form incl. geo field, Ramp + here.now creatives, empty queue) · <a href="https://kickbacks.dev/advertise">kickbacks.dev/advertise</a> ($1/block, click=50 imps) · <a href="https://api.waitspin.com/v1/market">api.waitspin.com/v1/market</a> (raw campaign data) · <a href="https://claudecodeads.com">claudecodeads.com</a> · <a href="https://aicash.fun">aicash.fun</a> · <a href="https://sponsoric.com">sponsoric.com</a> · <a href="https://idlen.io/advertisers/">idlen.io/advertisers</a> · <a href="https://www.koahlabs.com/advertisers">koahlabs.com/advertisers</a> · <a href="https://nex.ad/advertisers">nex.ad/advertisers</a></li>
+      <li><strong>Advertiser identities:</strong> <a href="https://citedy.com">citedy.com</a> · <a href="https://lnkgo.app">lnkgo.app</a> · <a href="https://adclaw.app">adclaw.app</a> + <a href="https://github.com/Citedy/adclaw">github.com/Citedy/adclaw</a> (common ownership) · <a href="https://context.dev">context.dev</a> (YC S26) · <a href="https://ramp.com">ramp.com</a> · <a href="https://sentry.io">sentry.io</a></li>
+      <li><strong>Independent teardowns:</strong> <a href="https://southsidechisolutions.com/blog/kickbacks-ai-is-adware-with-a-payout-page/">Southside CHI Solutions</a> (4-day Wireshark test: advertiser roster, $1.09 floor) · <a href="https://go-to-agency.com/en/blog/kickbacks-ai-ads-claude-code-spinner">Go To Agency</a> (Firecrawl = house placeholder, order-book mechanics)</li>
+      <li><strong>Community:</strong> <a href="https://news.ycombinator.com/item?id=48493940">HN launch thread</a> (407 imps → $4.43, the "$11 CPM" origin) · <a href="https://github.com/OthmanAdi/kickbacks-kit">kickbacks-kit</a> (ad archive format, Ramp creative)</li>
+      <li><strong>Adjacent category:</strong> <a href="https://techcrunch.com/2025/09/07/koah-raises-5m-to-bring-ads-into-ai-apps/">TechCrunch on Koah</a> · <a href="https://www.adweek.com/media/koah-adsense-for-chatgpt-series-a/">Adweek (Series A)</a> · <a href="https://labusinessjournal.com/technology/zeroclick-blends-advertising-ai/">LA Business Journal on ZeroClick</a> · <a href="https://www.trygravity.ai/">trygravity.ai</a> + <a href="https://docs.trygravity.ai/">docs</a> ($75M seed valuation via Analytics Insight/PitchBook) · <a href="https://www.getchatads.com/blog/top-eleven-ad-networks-for-ai/">ChatAds network roundup</a></li>
+      <li><strong>Biased (flagged):</strong> <a href="https://dev.to/digitalcheff/i-compared-every-ai-wait-state-ad-platform-kickbacks-idleads-idlen-more-3m4a">dev.to CPM comparison</a> — author sells a $19 setup guide; source of the amber "claimed" bars.</li>
+    </ul>
+    <p class="meta">Prepared by Sherlock for Nadav · builds on the internal Sponsored Code competitive research doc (Jul 6, 2026). Note on imagery: these creatives are plain text lines — terminal renderings above reproduce them verbatim from cited sources; beyond optional 64KB brand icons no display creative exists in this category.</p>
+  </div>
+</main>
