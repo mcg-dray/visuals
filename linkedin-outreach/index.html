@@ -1,0 +1,304 @@
+<title>LinkedIn Outreach — Sherlock Briefing</title>
+<style>
+  :root {
+    --paper: #F6F8FA;
+    --card: #FFFFFF;
+    --ink: #17232F;
+    --muted: #56687A;
+    --line: #D9E1E9;
+    --accent: #2E6FA3;
+    --accent-soft: #EAF1F7;
+    --good: #1E7A54;
+    --good-soft: #E8F4EE;
+    --warn: #A65D22;
+    --warn-soft: #F9F0E6;
+    --chip: #EDF2F7;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: "Avenir Next", "Helvetica Neue", "Segoe UI", -apple-system, sans-serif;
+    --serif: "Charter", "Iowan Old Style", Georgia, serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #101720; --card: #182230; --ink: #E4ECF3; --muted: #93A5B7;
+      --line: #263444; --accent: #6FA8D6; --accent-soft: #1C2A3A;
+      --good: #4EC08D; --good-soft: #16302A; --warn: #DE9A55; --warn-soft: #33261A;
+      --chip: #202D3C;
+    }
+  }
+  :root[data-theme="light"] {
+    --paper: #F6F8FA; --card: #FFFFFF; --ink: #17232F; --muted: #56687A;
+    --line: #D9E1E9; --accent: #2E6FA3; --accent-soft: #EAF1F7;
+    --good: #1E7A54; --good-soft: #E8F4EE; --warn: #A65D22; --warn-soft: #F9F0E6;
+    --chip: #EDF2F7;
+  }
+  :root[data-theme="dark"] {
+    --paper: #101720; --card: #182230; --ink: #E4ECF3; --muted: #93A5B7;
+    --line: #263444; --accent: #6FA8D6; --accent-soft: #1C2A3A;
+    --good: #4EC08D; --good-soft: #16302A; --warn: #DE9A55; --warn-soft: #33261A;
+    --chip: #202D3C;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: var(--serif); font-size: 16.5px; line-height: 1.6;
+    margin: 0; padding: 3rem 1.25rem 5rem;
+  }
+  main { max-width: 860px; margin: 0 auto; }
+  .eyebrow {
+    font-family: var(--sans); font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  }
+  h1 {
+    font-family: var(--sans); font-weight: 700; font-size: 2rem;
+    line-height: 1.15; margin: 0.4rem 0 0.5rem; text-wrap: balance;
+  }
+  .lede { color: var(--muted); margin: 0 0 2.25rem; max-width: 60ch; }
+  h2 {
+    font-family: var(--sans); font-weight: 700; font-size: 1.2rem;
+    margin: 3rem 0 0.35rem; text-wrap: balance;
+  }
+  h2 .no {
+    font-family: var(--mono); font-size: 0.8rem; color: var(--accent);
+    margin-right: 0.6rem; font-weight: 600;
+  }
+  .sub { color: var(--muted); margin: 0 0 1.25rem; max-width: 62ch; }
+  p { max-width: 66ch; }
+
+  /* Verdict cards */
+  .verdicts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 640px) { .verdicts { grid-template-columns: 1fr; } }
+  .verdict {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 1.25rem 1.35rem;
+  }
+  .verdict .q {
+    font-family: var(--sans); font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .verdict .a {
+    font-family: var(--sans); font-size: 1.25rem; font-weight: 700;
+    color: var(--good); margin-bottom: 0.4rem;
+  }
+  .verdict p { font-size: 0.95rem; margin: 0; color: var(--ink); }
+
+  /* Lanes */
+  .lanes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  @media (max-width: 700px) { .lanes { grid-template-columns: 1fr; } }
+  .lane {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 1.1rem 1.2rem; font-size: 0.92rem;
+  }
+  .lane h3 { font-family: var(--sans); font-size: 0.98rem; margin: 0 0 0.4rem; }
+  .lane p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  .lane .tag {
+    display: inline-block; font-family: var(--sans); font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; border-radius: 4px;
+    padding: 0.15rem 0.5rem; margin-bottom: 0.6rem;
+  }
+  .tag.closed { background: var(--chip); color: var(--muted); }
+  .tag.pick { background: var(--good-soft); color: var(--good); }
+  .tag.alt { background: var(--accent-soft); color: var(--accent); }
+
+  /* Search builder mock */
+  .builder {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    overflow: hidden; font-family: var(--sans);
+  }
+  .builder-head {
+    padding: 0.7rem 1.2rem; border-bottom: 1px solid var(--line);
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .frow {
+    display: grid; grid-template-columns: 175px 1fr; gap: 0.75rem;
+    padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .frow:last-child { border-bottom: none; }
+  @media (max-width: 560px) { .frow { grid-template-columns: 1fr; gap: 0.3rem; } }
+  .fname { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+  .fvals { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .chip {
+    background: var(--chip); border-radius: 5px; padding: 0.18rem 0.55rem;
+    font-size: 0.82rem; font-family: var(--mono); white-space: nowrap;
+  }
+  .chip.op { background: transparent; color: var(--muted); padding-inline: 0.1rem; }
+  .fnote { font-size: 0.78rem; color: var(--muted); width: 100%; font-family: var(--serif); }
+
+  /* Sequence */
+  .seq { list-style: none; margin: 0; padding: 0; }
+  .seq li {
+    position: relative; padding: 0 0 1.4rem 3.1rem;
+  }
+  .seq li::before {
+    content: attr(data-step);
+    position: absolute; left: 0; top: 0.05rem;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent);
+    font-family: var(--mono); font-size: 0.85rem; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .seq li:not(:last-child)::after {
+    content: ""; position: absolute; left: calc(1rem - 1px); top: 2.35rem; bottom: 0.25rem;
+    width: 2px; background: var(--line);
+  }
+  .seq h3 { font-family: var(--sans); font-size: 1rem; margin: 0 0 0.2rem; }
+  .seq h3 .when {
+    font-family: var(--mono); font-size: 0.75rem; font-weight: 500;
+    color: var(--muted); margin-left: 0.5rem;
+  }
+  .seq p { margin: 0; font-size: 0.93rem; color: var(--muted); max-width: 60ch; }
+  .stopnote {
+    background: var(--good-soft); border: 1px solid var(--good);
+    border-radius: 8px; padding: 0.8rem 1.1rem; font-size: 0.92rem;
+    margin-top: 0.25rem; max-width: 62ch;
+  }
+  .stopnote strong { color: var(--good); font-family: var(--sans); }
+
+  /* Guardrails */
+  .rails { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  @media (max-width: 640px) { .rails { grid-template-columns: 1fr; } }
+  .rail {
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    padding: 0.8rem 1rem; font-size: 0.9rem;
+  }
+  .rail b { font-family: var(--sans); display: block; font-size: 0.88rem; margin-bottom: 0.15rem; }
+  .rail span { color: var(--muted); }
+
+  .honest {
+    background: var(--warn-soft); border: 1px solid var(--warn);
+    border-radius: 8px; padding: 0.9rem 1.15rem; font-size: 0.93rem;
+    max-width: 66ch; margin: 1.25rem 0;
+  }
+  .honest strong { color: var(--warn); font-family: var(--sans); }
+
+  /* Table */
+  .twrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; min-width: 560px; }
+  th {
+    font-family: var(--sans); font-size: 0.75rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); text-align: left;
+    padding: 0.7rem 1rem; border-bottom: 1px solid var(--line);
+  }
+  td { padding: 0.65rem 1rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { font-family: var(--sans); font-weight: 600; white-space: nowrap; }
+  .plus { color: var(--good); font-weight: 600; }
+  .minus { color: var(--warn); font-weight: 600; }
+
+  /* Next steps */
+  .next { list-style: none; padding: 0; margin: 0; counter-reset: n; }
+  .next li {
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    padding: 0.8rem 1.1rem 0.8rem 3rem; margin-bottom: 0.6rem;
+    position: relative; font-size: 0.93rem; counter-increment: n;
+  }
+  .next li::before {
+    content: counter(n); position: absolute; left: 1rem; top: 0.8rem;
+    font-family: var(--mono); color: var(--accent); font-weight: 600;
+  }
+  .next b { font-family: var(--sans); }
+  .next span { color: var(--muted); }
+
+  footer {
+    margin-top: 3.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
+    font-size: 0.8rem; color: var(--muted); font-family: var(--sans);
+  }
+</style>
+
+<main>
+  <div class="eyebrow">Internal briefing &middot; Sherlock &rarr; Nadav &middot; July 20, 2026</div>
+  <h1>LinkedIn outreach, in-house</h1>
+  <p class="lede">Can Sherlock replicate what Outbounder does &mdash; connection requests to a defined audience, then a message cadence on accept &mdash; with full visibility and control? Short answers first, then the mechanics.</p>
+
+  <div class="verdicts">
+    <div class="verdict">
+      <div class="q">Q1 &middot; Can you automate connect + cadence?</div>
+      <div class="a">Yes &mdash; with one building block.</div>
+      <p>I have no native LinkedIn access today. LinkedIn's official API doesn't allow it for anyone. But an account-connection API layer (Unipile, ~&euro;49/mo) plugs your LinkedIn account into me, and from there I run the whole sequence: invites, messages, reply detection, logging.</p>
+    </div>
+    <div class="verdict">
+      <div class="q">Q2 &middot; How specific can the audience be?</div>
+      <div class="a">Specific enough for your example.</div>
+      <p>&ldquo;Director-of-programmatic titles at US mid-market media agencies&rdquo; is expressible almost verbatim in Sales Navigator filters. What we give up vs. ZoomInfo: intent data, verified emails, and revenue-based firmographics.</p>
+    </div>
+  </div>
+
+  <h2><span class="no">01</span>The integration reality</h2>
+  <p class="sub">Three ways to touch LinkedIn programmatically. Only one fits what you described.</p>
+  <div class="lanes">
+    <div class="lane">
+      <span class="tag closed">Closed to us</span>
+      <h3>Official LinkedIn API</h3>
+      <p>Restricted to approved partners (ads, recruiting, CRM sync). No automated connection requests or member messaging, period. Not an option for outreach.</p>
+    </div>
+    <div class="lane">
+      <span class="tag pick">Recommended</span>
+      <h3>Account-connection API (Unipile)</h3>
+      <p>Connects your real LinkedIn session and exposes clean API endpoints: send invitation, send message, read inbox, pull profiles. ~&euro;49/mo. Sherlock stays the brain &mdash; audience, cadence, and logs are all ours. This is what vendors like Outbounder use under the hood.</p>
+    </div>
+    <div class="lane">
+      <span class="tag alt">Turnkey alternative</span>
+      <h3>Full tool (HeyReach etc.)</h3>
+      <p>Campaign UI, sequences, and an API on top. Faster to first send, but it's another vendor black box &mdash; the exact thing you're trying to get away from. Keep as fallback.</p>
+    </div>
+  </div>
+  <div class="honest"><strong>Honest caveat:</strong> every one of these &mdash; including Outbounder today &mdash; automates a real LinkedIn account outside LinkedIn's terms of service. The risk is managed with volume caps and warm-up (below), and Unipile enforces rate limits, but it is never zero. The account doing the sending carries the risk, so we decide deliberately whether that's your profile or a dedicated seat.</div>
+
+  <h2><span class="no">02</span>Building the audience</h2>
+  <p class="sub">Your example, expressed as an actual Sales Navigator filter stack. One Sales Navigator seat (~$99/mo) on the sending account is the only data source needed.</p>
+  <div class="builder">
+    <div class="builder-head">Lead search &middot; mid-market US agencies, programmatic leadership</div>
+    <div class="frow"><div class="fname">Geography</div><div class="fvals"><span class="chip">United States</span></div></div>
+    <div class="frow"><div class="fname">Industry</div><div class="fvals"><span class="chip">Advertising Services</span><span class="chip">Marketing Services</span></div></div>
+    <div class="frow"><div class="fname">Company headcount</div><div class="fvals"><span class="chip">51&ndash;200</span><span class="chip">201&ndash;500</span><span class="fnote">Headcount is the mid-market proxy &mdash; LinkedIn has no revenue filter.</span></div></div>
+    <div class="frow"><div class="fname">Job title (Boolean)</div><div class="fvals"><span class="chip">"Director of Programmatic"</span><span class="chip op">OR</span><span class="chip">"Head of Programmatic"</span><span class="chip op">OR</span><span class="chip">"VP Programmatic"</span><span class="chip op">OR</span><span class="chip">"Programmatic Lead"</span></div></div>
+    <div class="frow"><div class="fname">Seniority</div><div class="fvals"><span class="chip">Director</span><span class="chip">VP</span><span class="chip">CXO</span></div></div>
+    <div class="frow"><div class="fname">Optional sharpeners</div><div class="fvals"><span class="chip">Posted in last 30 days</span><span class="chip">Changed jobs &lt; 1 yr</span><span class="fnote">Activity filters lift accept rates; job-changers are the classic warm trigger.</span></div></div>
+  </div>
+  <p style="font-size:0.93rem; color:var(--muted); max-width:66ch;">Honest trade-offs vs. ZoomInfo: no buying-intent signals, no verified emails, and &ldquo;agency vs. brand&rdquo; relies on self-reported industry, so the list needs a quick manual skim before launch. In exchange, titles on LinkedIn are fresher than any contact database &mdash; people update their own profiles &mdash; and every audience decision is visible to you instead of buried in a vendor's tooling.</p>
+
+  <h2><span class="no">03</span>The sequence</h2>
+  <p class="sub">Minimal by design &mdash; three touches, then stop. Every step logged to a tracking Sheet (prospect, stage, dates, replies, meetings).</p>
+  <ol class="seq">
+    <li data-step="1"><h3>Build &amp; dedupe the list</h3><p>Sales Nav search &rarr; tracking Sheet. Remove existing connections, current partners, and anyone already in an Outbounder sequence so nobody gets hit twice.</p></li>
+    <li data-step="2"><h3>Connection request <span class="when">20&ndash;25/day, ~100/wk</span></h3><p>Short personalized note or none at all &mdash; blank invites often accept better than salesy ones. We A/B this from week one.</p></li>
+    <li data-step="3"><h3>Message 1 &mdash; the opener <span class="when">within 24h of accept</span></h3><p>Thanks + one specific observation about their agency or a programmatic point. No pitch, no link.</p></li>
+    <li data-step="4"><h3>Message 2 &mdash; the substance <span class="when">day +3&ndash;4</span></h3><p>The MCG one-liner: upstream supply optimization, what it typically does for an agency's programmatic margin. One idea, three sentences.</p></li>
+    <li data-step="5"><h3>Message 3 &mdash; the ask, then silence <span class="when">day +8&ndash;10</span></h3><p>Direct: 20 minutes with you. If no reply, the sequence ends &mdash; no chaser #4. Unaccepted invites are withdrawn after 3 weeks to keep the pending count clean.</p></li>
+  </ol>
+  <div class="stopnote"><strong>Any reply, at any step, stops the cadence instantly.</strong> I flag it to you on Dispatch with the thread and a suggested response &mdash; a human takes over the moment a conversation starts.</div>
+
+  <h2><span class="no">04</span>Guardrails</h2>
+  <div class="rails">
+    <div class="rail"><b>Volume caps</b><span>&le;25 invites/day, ~100/week &mdash; LinkedIn's practical ceiling. Messages capped similarly.</span></div>
+    <div class="rail"><b>Warm-up ramp</b><span>Weeks 1&ndash;2 at half volume before full pace. New automation on an account is the flag LinkedIn watches for.</span></div>
+    <div class="rail"><b>Human rhythm</b><span>Sends only in US business hours, randomized minutes between actions &mdash; never batch-fired.</span></div>
+    <div class="rail"><b>No identical templates</b><span>Each message varies per prospect. Identical copy across accounts is how LinkedIn correlates automation.</span></div>
+  </div>
+
+  <h2><span class="no">05</span>Versus Outbounder</h2>
+  <div class="twrap">
+    <table>
+      <tr><th></th><th>Outbounder today</th><th>Sherlock + Unipile</th></tr>
+      <tr><td>Audience source</td><td>ZoomInfo + their lookalike methods</td><td>Sales Navigator filters, list reviewed by you</td></tr>
+      <tr><td>Intent data</td><td><span class="plus">Yes</span> (ZoomInfo signals)</td><td><span class="minus">No</span> &mdash; nearest proxy is activity filters</td></tr>
+      <tr><td>Channels</td><td>Email + LinkedIn</td><td>LinkedIn first; email addable later via the same Unipile API</td></tr>
+      <tr><td>Sequencing logic</td><td>Theirs, opaque</td><td>Defined by you, every touch visible</td></tr>
+      <tr><td>Reporting</td><td>Their cadence, their format</td><td>Live Sheet + weekly summary from me</td></tr>
+      <tr><td>Hard cost</td><td>Retainer</td><td>~&euro;49/mo Unipile + ~$99/mo Sales Nav</td></tr>
+    </table>
+  </div>
+  <p style="font-size:0.93rem; color:var(--muted); max-width:66ch;">The gap is real but narrow: intent data and the email channel. Everything else &mdash; targeting, cadence, and especially transparency &mdash; we match or beat, which is the actual complaint about Outbounder.</p>
+
+  <h2><span class="no">06</span>To go live</h2>
+  <ol class="next">
+    <li><b>Decide the sending account</b> <span>&mdash; your profile (highest accept rates) or a dedicated seat (isolates risk).</span></li>
+    <li><b>Sales Navigator seat</b> <span>on that account (~$99/mo), Unipile account (~&euro;49/mo).</span></li>
+    <li><b>I build the skill</b> <span>&mdash; connect the account, tracking Sheet, cadence engine, reply escalation. Est. 2&ndash;3 days.</span></li>
+    <li><b>Pilot: ~200 prospects</b> <span>from the filter stack above, 2-week warm-up pace, then we review accept and reply rates before scaling or touching Outbounder's contract.</span></li>
+  </ol>
+
+  <footer>Prepared by Sherlock. Figures (pricing, volume caps, filter capabilities) verified against Unipile, HeyReach, and Sales Navigator documentation &amp; current guides, July 2026. Nothing has been purchased, connected, or sent.</footer>
+</main>
